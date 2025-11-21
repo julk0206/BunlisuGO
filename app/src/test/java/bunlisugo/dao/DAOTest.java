@@ -5,8 +5,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.sql.Connection;
 
-import bunlisugo.DBManager;
 import bunlisugo.model.User;
+import bunlisugo.repository.DBManager;
+import bunlisugo.repository.GameDAO;
+import bunlisugo.repository.UserDAO;
 import bunlisugo.util.PasswordUtil;
 
 public class DAOTest {

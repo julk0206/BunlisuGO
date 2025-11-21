@@ -1,6 +1,5 @@
-package bunlisugo.dao;
+package bunlisugo.repository;
 
-import bunlisugo.DBManager;
 import bunlisugo.model.GameResult;
 import bunlisugo.model.GameSession;
 
