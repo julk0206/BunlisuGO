@@ -32,8 +32,21 @@ public class TrashData {
     public static Trash randomTrash() {
         TrashType[] types = TrashType.values();
         TrashType randomType = types[random.nextInt(types.length)];
+
         List<Trash> trashes = trashByType.get(randomType);
-        return trashes.get(random.nextInt(trashes.size()));
+        Trash trash = trashes.get(random.nextInt(trashes.size()));
+
+        int x = random.nextInt(800);
+        int y = random.nextInt(600);
+        
+        return new Trash (
+            trash.getName(),
+            trash.getType(),
+            trash.getImagePath(),
+            x,
+            y,
+            false
+        );
     }
     
 }

@@ -1,6 +1,6 @@
 package bunlisugo.service;
 
-public class GameEngine {
+public class GameService {
 
     // 게임 로직
 
