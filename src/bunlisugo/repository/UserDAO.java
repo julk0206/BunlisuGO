@@ -48,7 +48,7 @@ public class UserDAO {
                         rs.getString("username"),
                         rs.getString("password_hash"),
                         rs.getInt("ranking_score"),
-                        rs.getTimestamp("created_at").toLocalDateTime()
+                        rs.getTimestamp("created_at").toLocalDateTime() // 유저가 가입한 시간(회원가입 시각)을 저장하는 열
                     );
                     return user;
                 }
