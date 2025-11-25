@@ -1,4 +1,4 @@
-package Client.View;
+package bunlisugo.client.view;
 
 import java.awt.Font;
 import java.awt.event.ActionEvent;

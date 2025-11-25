@@ -1,9 +1,10 @@
-package Client.View;
+package bunlisugo.client.view;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+//import bunlisugo.server.service.LoginService;
 
 public class LoginView {
 

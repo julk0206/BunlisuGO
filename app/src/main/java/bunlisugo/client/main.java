@@ -1,5 +1,5 @@
-package Client;
-import Client.View.LoginView;  
+package bunlisugo.client;
+import bunlisugo.client.view.LoginView;  
 
 
 
