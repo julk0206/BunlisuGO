@@ -84,7 +84,7 @@ private final GameClient client; // Main에서 넘겨준 GameClient를 보관하
             // 회원가입 버튼 클릭 시 동작
             // 예: 회원가입 화면으로 전환
             frame.dispose(); // 현재 로그인 뷰 닫기
-            new SignView(); // 회원가입 뷰 열기 (SignView 클래스가 있다고 가정)
+            new SignView(client); // 회원가입 뷰 열기 (SignView 클래스가 있다고 가정)
         });
 		frame.getContentPane().add(SignButton);
 

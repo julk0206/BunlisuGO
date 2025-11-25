@@ -87,6 +87,6 @@ public class GameClient {
     // 테스트용 main
     public static void main(String[] args) {
         GameClient client = GameClient.getInstance();
-        client.send("LOGIN|yeeun|0617");
+        
     }
 }
