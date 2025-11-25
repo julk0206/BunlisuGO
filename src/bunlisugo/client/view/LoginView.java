@@ -3,19 +3,29 @@ package bunlisugo.client.view;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+
+import bunlisugo.client.controller.GameClient;
 
 public class LoginView {
 
 private JFrame frame;
 private JTextField NameField;
 private JTextField PasswordField;
+private final GameClient client; // Main에서 넘겨준 GameClient를 보관하기 위해...
 
 
-	public LoginView() {
+	public LoginView(GameClient client) {
+		this.client = client; // 필드에 저장     
+	    this.client.setLoginView(this); // 자기 자신 등록
+	    
         frame = new JFrame("Login View");
         frame.setBounds(100,100, 1200, 750);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        GameClient.getInstance().setLoginView(this); // 자기 자신을 GameClient에 등록
+        
         initialize();
         frame.setVisible(true);
     }
@@ -53,13 +63,18 @@ private JTextField PasswordField;
         //로그인 버튼
 		JButton LoginButton = new JButton("로그인");
 		LoginButton.setBounds(481, 465, 221, 66);
+		frame.getContentPane().add(LoginButton);
+		
         LoginButton.addActionListener(e -> {
             // 로그인 버튼 클릭 시 동작
-            // 예: 로그인 처리 및 홈 화면으로 전환
-            frame.dispose(); // 현재 로그인 뷰 닫기
-            new HomeView(); // 홈 뷰 열기 (HomeView 클래스가 있다고 가정)
+        	// username과 비밀번호를 입력한 곳에서 텍스트를 뽑아 가져옴
+        	 String username = NameField.getText();
+        	 String pw = PasswordField.getText();
+        	 
+        	 // 서버 프로토콜 형식에 맞춰서 작성하여 서버에 로그인 요청 보내기
+        	 client.send("LOGIN|" + username + "|" + pw); // 여기서도 받은 client 사용            // 여기서 화면 전환 X(서버가 LOGIN_OK를 줄 때 전환한다.)
         });
-		frame.getContentPane().add(LoginButton);
+		
 		
 		
 		//회원가입 버튼
@@ -73,7 +88,19 @@ private JTextField PasswordField;
         });
 		frame.getContentPane().add(SignButton);
 
-
+		
         
+    }
+    
+    public void onLoginSuccess(String username) {
+        // 로그인 성공 시 화면 전환 및 성공했다고 팝업 띄움
+        JOptionPane.showMessageDialog(frame, "로그인 성공: " + username);
+        frame.dispose();
+        new HomeView(); 
+    }
+
+    public void onLoginFail(String reason) {
+        // 실패 메시지를 팝업으로 띄움
+        JOptionPane.showMessageDialog(frame, "로그인 실패: " + reason);
     }
 }

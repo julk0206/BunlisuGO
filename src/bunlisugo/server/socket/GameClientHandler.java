@@ -79,7 +79,7 @@ public class GameClientHandler extends Thread {
             case "SIGNUP":
                 handleSignup(parts);
                 break;
-            case "MATCH":                      // ★ 매칭 명령 추가
+            case "MATCH":                      
                 handleMatching(parts);
                 break;
             default:
