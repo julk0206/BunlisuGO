@@ -56,6 +56,16 @@ private JTextField PasswordField;
         LoginButton.addActionListener(e -> {
             // 로그인 버튼 클릭 시 동작
             // 예: 로그인 처리 및 홈 화면으로 전환
+            String username = NameField.getText();  
+            String password = PasswordField.getText();  
+            // 여기에 로그인 로직 추가 (예: 서버와 통신)    
+            if(username.isEmpty() || password.isEmpty()) {
+            	//경고창 띄우기
+            	System.out.println("아이디 또는 비밀번호를 입력하세요.");
+            	return;
+            }
+
+
             frame.dispose(); // 현재 로그인 뷰 닫기
             new HomeView(); // 홈 뷰 열기 (HomeView 클래스가 있다고 가정)
         });
