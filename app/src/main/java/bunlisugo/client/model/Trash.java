@@ -1,5 +1,5 @@
 package bunlisugo.client.model;
-
+//Trash는 server/model 에 있어야할것같은데?
 public class Trash {
     private String name;
     private TrashType type;
