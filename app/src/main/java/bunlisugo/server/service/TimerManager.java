@@ -2,12 +2,12 @@ package bunlisugo.server.service;
 
 import java.time.Instant;
 
-public class GameTimer {
+public class TimerManager {
 
     private final long gameDuration; 
     private final Instant startTime;
 
-    public GameTimer(long seconds) {
+    public TimerManager(long seconds) {
         this.gameDuration = seconds * 1000; // milliseconds
         this.startTime = Instant.now();
     }
