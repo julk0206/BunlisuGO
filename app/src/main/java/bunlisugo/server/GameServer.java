@@ -9,7 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import bunlisugo.server.repository.DBManager;
-import bunlisugo.server.socket.GameClientHandler;
+import bunlisugo.server.controller.GameClientHandler;
 
 public class GameServer {
 	public static final int PORT = 3328; //나중에 알아서 수정

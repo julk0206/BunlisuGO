@@ -62,6 +62,36 @@ public class UserDAO {
         return null;
     }
 
+    // 사용자 ID로 조회
+    public User getUserById(int userId) throws SQLException {
+        // DB에서 사용자 조회
+        String sql = "SELECT * FROM users WHERE user_id = ?";
+
+        try(Connection conn = DBManager.getConnection();
+        PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, userId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    User user = new User(
+                        rs.getInt("user_id"),
+                        rs.getString("username"),
+                        rs.getString("password_hash"),
+                        rs.getInt("ranking_score"),
+                        rs.getTimestamp("created_at").toLocalDateTime()
+                    );
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                return null;
+                
+            } 
+    
+        } 
+    
+
 
     // 랭킹 조회
     public List<User> getTopRanking() {

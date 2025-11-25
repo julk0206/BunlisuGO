@@ -1,4 +1,4 @@
-package Client.View;
+package bunlisugo.client.view;
 
 import java.awt.Color;
 
