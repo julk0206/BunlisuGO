@@ -1,9 +1,10 @@
-package bunlisugo.server.repository;
+package bunlisugo.server.dao;
 
 import java.util.*;
 
 import bunlisugo.server.model.GameResult;
 import bunlisugo.server.model.GameSession;
+import bunlisugo.server.repository.DBManager;
 
 import java.sql.*;
 

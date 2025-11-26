@@ -1,7 +1,5 @@
 package bunlisugo.client.view;
 
-import java.awt.Rectangle;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.JButton;

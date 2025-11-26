@@ -1,9 +1,10 @@
-package bunlisugo.server.repository;
+package bunlisugo.server.dao;
 
 import java.sql.*;
 import java.util.*;
 
 import bunlisugo.server.model.User;
+import bunlisugo.server.repository.DBManager;
 
 
 public class UserDAO {

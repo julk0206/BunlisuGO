@@ -6,8 +6,8 @@ import java.net.Socket;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
-import bunlisugo.server.service.LoginService;
-import bunlisugo.server.service.SignupService;
+import bunlisugo.server.service.*;
+import bunlisugo.server.service.*;
 
 public class GameClientHandler extends Thread {
 

@@ -4,19 +4,7 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import java.awt.BorderLayout;
 import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-import javax.swing.SwingUtilities;
-
-import java.awt.Color;
-import java.awt.Panel;
-import java.awt.Point;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;

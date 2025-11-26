@@ -2,7 +2,7 @@ package bunlisugo.server.model;
 
 import java.util.*;
 
-public class TrashData {
+public class TrashData { /*
     public static final Map<TrashType, List<Trash>> trashByType = new HashMap<>();
     private static final Random random = new Random();
     static {
@@ -48,5 +48,5 @@ public class TrashData {
             false
         );
     }
-    
+    */
 }

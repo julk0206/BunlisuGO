@@ -2,8 +2,8 @@ package bunlisugo.server.service;
 
 import java.util.*;
 
-import bunlisugo.server.model.Trash;
-import bunlisugo.server.model.TrashData;
+import bunlisugo.server.model.*;
+import bunlisugo.server.model.*;
 
 public class GameService {
     // 쓰레기 생성 및 관리 로직
@@ -12,12 +12,12 @@ public class GameService {
     private final int MAX_TRASH = 20;
 
     // 랜덤 쓰레기 생성
-    public void generateTrash() {
-        if (activeTrashes.size() < MAX_TRASH) {
-            Trash newTrash = TrashData.randomTrash();
-            activeTrashes.add(newTrash);
-        }
-    }
+    // public void generateTrash() {
+    //     if (activeTrashes.size() < MAX_TRASH) {
+    //         Trash newTrash = TrashData.randomTrash();
+    //         activeTrashes.add(newTrash);
+    //     }
+    // }
 
     // 쓰레기 수집 처리
     public boolean collectedTrash(String trashName) {
@@ -47,7 +47,7 @@ public class GameService {
 
     // 게임 루프에서 주기적 호출하기
     public void update() {
-        generateTrash();
+        //generateTrash();
         removeCollected();
     }
 }

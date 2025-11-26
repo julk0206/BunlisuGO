@@ -8,9 +8,8 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import bunlisugo.server.repository.DBManager;
-import bunlisugo.server.socket.GameClientHandler;
-
+import bunlisugo.server.repository.*;
+import bunlisugo.server.socket.*;
 public class GameServer {
 	public static final int PORT = 3328; //나중에 알아서 수정
 	private static final Logger logger = Logger.getLogger(GameServer.class.getName());

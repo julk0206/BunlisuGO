@@ -1,20 +1,24 @@
 package bunlisugo.server.model;
 
+
+//여기는 서버!!!!!!!!!!!!!!!
+
+
 public class Trash {
     private String name;
-    private TrashType type;
+    private String type;
     private String imagePath;
     private int x;
     private int y;
     private boolean isCollected;
 
-    public Trash(String name, TrashType type, String imagePath) {
+    public Trash(String name, String type, String imagePath) {
         this.name = name;
         this.type = type;
         this.imagePath = imagePath;
     }
 
-    public Trash(String name, TrashType type, String imagePath, int x, int y, boolean isCollected) {
+    public Trash(String name, String type, String imagePath, int x, int y, boolean isCollected) {
         this.name = name;
         this.type = type;
         this.imagePath = imagePath;
@@ -31,11 +35,11 @@ public class Trash {
         this.name = name;
     }
 
-    public TrashType getType() {
+    public String getType() {
         return this.type;
     }
 
-    public void setType(TrashType type) {
+    public void setType(String type) {
         this.type = type;
     }
 

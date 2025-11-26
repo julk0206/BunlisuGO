@@ -1,15 +1,16 @@
 package bunlisugo.dao;
 
 import org.junit.jupiter.api.Test;
+
+import bunlisugo.server.dao.GameDAO;
+import bunlisugo.server.dao.UserDAO;
+import bunlisugo.server.model.*;
+import bunlisugo.server.repository.*;
+import bunlisugo.server.util.*;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.sql.Connection;
-
-import bunlisugo.server.model.User;
-import bunlisugo.server.repository.DBManager;
-import bunlisugo.server.repository.GameDAO;
-import bunlisugo.server.repository.UserDAO;
-import bunlisugo.server.util.PasswordUtil;
 
 public class DAOTest {
     private static final UserDAO userDAO = new UserDAO();
