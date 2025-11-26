@@ -6,7 +6,7 @@ import java.sql.DriverManager;
 
 public class DBManager {
 
-    private static final String url = "jdbc:mariadb://58.230.70.36:8880/trashgame?serverTimezone=UTC";
+    private static final String url = "jdbc:mariadb://127.0.0.1:8080/trashgame?serverTimezone=UTC";
     private static final String username = "stdUser";
     private static final String password = "wkvmtlf2";
 

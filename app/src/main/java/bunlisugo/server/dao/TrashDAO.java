@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import bunlisugo.client.model.TrashType;
 import bunlisugo.server.model.Trash;
 import bunlisugo.server.repository.DBManager;
 
@@ -19,7 +20,9 @@ public class TrashDAO {
         String sql = "SELECT name, type, image_path " +
                      "FROM trashes ORDER BY RAND() LIMIT ?";
         List<Trash> list = new ArrayList<>();
-        Trash trash =null;
+
+        Trash trash =null;//빈 객체 생성. 할 때 마다 비워야하니까
+
         try (Connection conn = DBManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -29,6 +32,7 @@ public class TrashDAO {
                 while (rs.next()) {
                     String name = rs.getString("name");
                     String type = rs.getString("type");
+                    //TrashType type = TrashType.valueOf(typeStr.toUpperCase());
                     String image_path = rs.getString("image_path");
                     trash = new Trash(name, type, image_path);
                     System.out.println(image_path);

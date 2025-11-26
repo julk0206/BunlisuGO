@@ -30,20 +30,20 @@ public class GameView {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(null);
         initialize();
-        frame.setVisible(true);
         showTrashes();
+        frame.setVisible(true);
     }
-
+    
     private void initialize() {
         JLabel myScoreLabel = new JLabel("내 점수:");
         myScoreLabel.setOpaque(true);
-		myScoreLabel.setBackground(Color.BLUE);
+		myScoreLabel.setBackground(Color.DARK_GRAY);
 		myScoreLabel.setBounds(71, 34, 166, 53);
 		frame.getContentPane().add(myScoreLabel);
 		
 		JLabel opponentScoreLabel= new JLabel("상대방 점수:");
         opponentScoreLabel.setOpaque(true);
-		opponentScoreLabel.setBackground(Color.RED);
+		opponentScoreLabel.setBackground(Color.DARK_GRAY);
 		opponentScoreLabel.setBounds(938, 34, 166, 53);
 		frame.getContentPane().add(opponentScoreLabel);
 		
@@ -58,16 +58,17 @@ public class GameView {
         
         int boxWidth = 189;
 		int boxHeight = 217;
-		int startX = 120;
-		int gap = 100;
+		int startX = 80;
+		int gap = 90;
 
         
         for (int i =0; i<4; i ++){
             JPanel box = new JPanel();
             box.setBounds(startX + i*(boxWidth+gap), 484 , boxWidth, boxHeight);
             box.setLayout(null);
-            
-            ImageIcon trashboximage = new ImageIcon("images/trashbox.png");
+            //box.setOpaque(true);
+            //box.setBackground(Color.PINK);
+            ImageIcon trashboximage = new ImageIcon(getClass().getResource("/images/교동이.png"));
             JLabel TrashBoxImageLabel = new JLabel(trashboximage);
             TrashBoxImageLabel.setBounds(0, 0 , boxWidth, boxHeight);
             box.add(TrashBoxImageLabel);
@@ -95,8 +96,8 @@ public class GameView {
                 //System.out.println("Trash: " + trash.getName() + ", Type: " + trash.getType());
                JButton btn = new JButton(t.getName());
                btn.setIcon(new ImageIcon(t.getImagePath()));
-               btn.setBounds((int) (100*(Math.random())), (int) (100*(Math.random())), 150, 150);
-               moveButton(btn);
+               btn.setBounds((int)(100*(Math.random())), (int) (100*(Math.random())), 150, 150);
+               //moveButton(btn);
                System.out.println("path " + t.getImagePath());
                //System.out.println("exits"+ new.java.io.File(t.getImagePath()).exists());
                frame.getContentPane().add(btn); 
