@@ -4,9 +4,12 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+import bunlisugo.client.controller.GameClient;
+
 public class MatchingView {
 
 private JFrame frame;
+private GameClient client;
     
     public MatchingView() {
         frame = new JFrame("Matching View");
@@ -36,7 +39,7 @@ private JFrame frame;
             // 취소 버튼 클릭 시 동작
             // 예: 매칭 취소 및 홈 화면으로 돌아가기
             //frame.dispose(); // 현재 매칭 뷰 닫기
-            new HomeView();
+            new HomeView(client);
             frame.dispose();
             // 홈 뷰 열기 (HomeView 클래스가 있다고 가정)이미 로그인된 상태인데 new 가 맞나?
         });

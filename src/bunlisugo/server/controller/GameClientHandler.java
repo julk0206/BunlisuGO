@@ -1,4 +1,4 @@
-package bunlisugo.server.socket;
+package bunlisugo.server.controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;

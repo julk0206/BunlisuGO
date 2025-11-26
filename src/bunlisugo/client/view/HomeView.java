@@ -9,10 +9,16 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+import bunlisugo.client.controller.GameClient;
+
 public class HomeView {
     private JFrame frame;
+    private final GameClient client;
     
-    public HomeView() {
+    public HomeView(GameClient client) {
+    	this.client = client;
+    	this.client.setHomeView(this);
+    	
         frame = new JFrame("Home View");
         frame.setBounds(100,100, 1200, 750);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -68,14 +74,5 @@ public class HomeView {
             new RankingView(); // 랭킹 뷰 열기 (RankingView 클래스가 있다고 가정)
         });     
 		frame.getContentPane().add(goRankingViewButton);
-
-
-        
-
-
-
     }
-
-
-
 }

@@ -1,39 +1,22 @@
 package bunlisugo.server.service;
 
-import java.util.*;
+import java.util.Random;
 
 import bunlisugo.server.model.Trash;
 import bunlisugo.server.model.TrashData;
 
 public class TrashSpawnService {
-    // 쓰레기 생성 및 관리 로직
 
-    private final List<Trash> activeTrashes = new ArrayList<>();
-    private final int maxTrashCount = 20;
+    // 랜덤 쓰레기 생성
+    public Trash spawnTrash(int maxX, int maxY) {
+            Trash trash = TrashData.randomTrashTemplate();
 
-    public void generateTrash() {
-        if (activeTrashes.size() < maxTrashCount) {
-            Trash newTrash = TrashData.randomTrash();
-            activeTrashes.add(newTrash);
-        }
-    }
-    
-    public void removeCollected() {
-        Iterator<Trash> iterator = activeTrashes.iterator();
-        while (iterator.hasNext()) {
-            Trash trash = iterator.next();
-            if (trash.isIsCollected()) {
-                iterator.remove();
-            }
-        }
-    }
-    
-    public List<Trash> getActiveTrashes() {
-        return activeTrashes;
-    }
+            // 랜덤 위치 설정
+            int randomX = new Random().nextInt(maxX + 1);
+            int randomY = new Random().nextInt(maxY + 1);
+            trash.setX(randomX);
+            trash.setY(randomY);
 
-    public void update() {
-        generateTrash();
-        removeCollected();
+            return trash;
     }
 }

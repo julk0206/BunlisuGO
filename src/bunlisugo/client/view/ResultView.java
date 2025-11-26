@@ -4,9 +4,12 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+import bunlisugo.client.controller.GameClient;
+
 public class ResultView {
 
 private JFrame frame;
+private GameClient client;
     
     public ResultView() {
         frame = new JFrame("Result View");
@@ -64,7 +67,7 @@ private JFrame frame;
             // 홈 화면 버튼 클릭 시 동작
             // 예: 홈 화면으로 전환
             frame.dispose();
-            new HomeView(); // 홈 뷰 열기 (HomeView 클래스가 있다고 가정)
+            new HomeView(client); // 홈 뷰 열기 (HomeView 클래스가 있다고 가정)
         }); 
 		frame.getContentPane().add(goHomeButton);
 

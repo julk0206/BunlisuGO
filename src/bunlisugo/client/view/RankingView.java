@@ -5,9 +5,12 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 
+import bunlisugo.client.controller.GameClient;
+
 public class RankingView {
 
 private JFrame frame;
+private GameClient client;
     
     public RankingView() {
         frame = new JFrame("Ranking View");
@@ -28,7 +31,7 @@ private JFrame frame;
             // 돌아가기 버튼 클릭 시 동작
             // 예: 이전 화면으로 전환
             frame.dispose(); // 현재 랭킹 뷰 닫기
-            new HomeView(); // 홈 뷰 열기 (HomeView 클래스가 있다고 가정)
+            new HomeView(client); // 홈 뷰 열기 (HomeView 클래스가 있다고 가정)
         }); 
 		frame.getContentPane().add(backButton);
 		

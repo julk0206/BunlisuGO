@@ -5,6 +5,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
+import bunlisugo.client.view.HomeView;
 import bunlisugo.client.view.LoginView;
 
 public class GameClient {
@@ -16,16 +17,21 @@ public class GameClient {
     
     // 로그인 화면 참조
     private LoginView loginView;
+	private HomeView homeView;
 
-    // LoginView가 자기 자신을 등록할 수 있게
+
     public void setLoginView(LoginView loginView) {
         this.loginView = loginView;
+    }
+    
+    public void setHomeView(HomeView homeView) { 
+        this.homeView = homeView;
     }
 
 
     private GameClient() {
         try {
-            socket = new Socket("10.240.54.159", 3328);
+            socket = new Socket("10.240.193.80", 3328);
             System.out.println("Connected to server..");
 
             out = new PrintWriter(socket.getOutputStream(), true); // 서버로 문자열을 보냄
@@ -37,7 +43,7 @@ public class GameClient {
                     String resp;
                     while ((resp = in.readLine()) != null) {
                         System.out.println("RECV: " + resp);
-                        // TODO: 여기서 LoginView, MatchingView 등에 전달
+                        handleResponse(resp); // 응답 받아서 처리
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
