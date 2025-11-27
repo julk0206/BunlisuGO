@@ -60,11 +60,11 @@ public class TrashDTO {
         this.y = y;
     }
 
-    public boolean isIsCollected() {
+    public boolean isIsCollected() { //반환하는 거고 
         return this.isCollected;
     }
 
-    public void setIsCollected(boolean isCollected) {
+    public void setIsCollected(boolean isCollected) {//얘는 리턴없이 설정만함
         this.isCollected = isCollected;
     }
 

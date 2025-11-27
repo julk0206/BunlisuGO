@@ -5,20 +5,36 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import bunlisugo.client.GameClient;
+import bunlisugo.client.controller.GameController;
+import bunlisugo.client.view.game.GameView;
+import bunlisugo.client.view.game.TimePanel;
+import bunlisugo.client.view.game.TrashBoxPanel;
 
 public class MatchingView {
 
     private JFrame frame;
     private final GameClient client;
+    private final TimePanel timePanel;
+    private final GameController gameController;
+    private final TrashBoxPanel trashBox;
 
     private JLabel waitingPlayerLabel;
     private JLabel waitingMessageLabel;
     private JButton joinButton;
 
-    // 홈에서 부를 때: new MatchingView(client);
-    public MatchingView(GameClient client) {
+    public MatchingView(GameClient client,
+                        TimePanel timePanel,
+                        GameController gameController,
+                        TrashBoxPanel trashBox) {
+
         this.client = client;
-        client.setMatchingView(this);
+        this.timePanel = timePanel;
+        this.gameController = gameController;
+        this.trashBox = trashBox;
+
+        // GameClient에 자기 자신 등록 (MATCH_* 이벤트 받을 수 있게)
+        this.client.setMatchingView(this);
+
         frame = new JFrame("Matching View");
         frame.setBounds(100, 100, 1200, 750);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -27,9 +43,12 @@ public class MatchingView {
         frame.setVisible(true);
     }
 
-    // 혹시 기존 코드에 new MatchingView()가 남아 있어도 돌아가게 하고 싶으면 추가
+    // 필요하면 기존 no-arg 생성자도 살려서 ResultView 같은 데서 사용:
     public MatchingView() {
-        this(GameClient.getInstance());
+        this(GameClient.getInstance(),
+             new TimePanel(),
+             new GameController(),
+             new TrashBoxPanel());
     }
 
     private void initialize() {
@@ -43,11 +62,9 @@ public class MatchingView {
         waitingMessageLabel.setBounds(426, 248, 332, 66);
         frame.getContentPane().add(waitingMessageLabel);
 
-        // 취소 버튼
         JButton cancelButton = new JButton("취소");
         cancelButton.setBounds(237, 478, 264, 82);
         cancelButton.addActionListener(e -> {
-            // 매칭 취소 서버에 알리기
             if (client != null) {
                 client.send("MATCH|CANCEL");
             }
@@ -56,29 +73,24 @@ public class MatchingView {
         });
         frame.getContentPane().add(cancelButton);
 
-        // 참여하기 버튼
         joinButton = new JButton("참여하기");
         joinButton.setBounds(645, 478, 264, 82);
         joinButton.addActionListener(e -> {
-            // GameView로 바로 가지 않음!
             if (client != null) {
-                // 서버에 매칭 요청 보내기
                 client.send("MATCH|JOIN");
             }
-            // 버튼 비활성화하고 메시지만 바꿔둠
             joinButton.setEnabled(false);
             waitingMessageLabel.setText("상대방을 찾는 중입니다...");
         });
         frame.getContentPane().add(joinButton);
     }
 
-    // (선택) GameClient에서 MATCH_WAITING, MATCH_FOUND 받을 때 호출해줄 메서드도 만들어두면 편해
     public void onMatchWaiting(int waitingCount) {
         waitingPlayerLabel.setText("대기 중인 플레이어: " + waitingCount + "명");
     }
 
     public void onMatchFound() {
         frame.dispose();
-        new GameView();   // 두 명 매칭 완료되었을 때만 게임 화면으로
+        new GameView(timePanel, gameController, trashBox);
     }
 }

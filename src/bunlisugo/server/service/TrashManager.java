@@ -12,8 +12,9 @@ public class TrashManager {
     private final List<TrashDTO> activeTrashes = new ArrayList<>();
     private final TrashSpawnService TrashSpawnService = new TrashSpawnService();
     private final int MAX_TRASH = 20;
+    private TrashJudgeService trashJudgeService = new TrashJudgeService();
 
-    // 게임 맵 크기
+    // 게임 맵 크기 1200*750임 
     private final int maxX;
     private final int maxY;
 
@@ -32,7 +33,7 @@ public class TrashManager {
     }
 
     // 쓰레기 수집 처리
-    public boolean collectTrash(int playerId, String trashName) {
+   /* public boolean collectTrash(int playerId, String trashName) {
         for (TrashDTO trash : activeTrashes) {
             if (trash.getName().equals(trashName) && !trash.isIsCollected()) {
                 trash.setIsCollected(true);
@@ -42,7 +43,29 @@ public class TrashManager {
             }
         }
         return false;
-    }
+    } */
+
+    //살짝 수정함 
+    public boolean collectTrash(int playerId, String trashName) {
+        for (TrashDTO trash : activeTrashes) {
+            if (trash.getName().equals(trashName) && !trash.isIsCollected()) { //아직 안 된 애들 중에서 
+
+                boolean isInsideTrashBox =trashJudgeService.judgeTrashCollected(trash.getX(), trash.getY()) ; //박스패널 전체에 들어갔는지. 
+                
+                if(isInsideTrashBox){ //박스 안에 들어감
+                
+                    trash.setIsCollected(true);
+                    trash.setCollectorId(playerId);
+
+                return true; //이러면 collectTrash가 true반환 
+                }
+            }}
+            return false;
+        }
+    
+
+
+
 
     // 분류된 쓰레기 제거 (필요 없을듯?)
     public void removeCollected() {
@@ -58,6 +81,7 @@ public class TrashManager {
     public List<TrashDTO> getActiveTrashes() {
         return activeTrashes;
     }
+
 
 }
 
