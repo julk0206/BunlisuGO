@@ -4,7 +4,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-import bunlisugo.client.controller.GameClient;
+import bunlisugo.client.GameClient;
 
 public class ResultView {
 
@@ -57,7 +57,7 @@ private GameClient client;
             // 다시 매칭 버튼 클릭 시 동작
             // 예: 매칭 화면으로 전환
             frame.dispose(); // 현재 결과 뷰 닫기
-            new MatchingView(client); // 매칭 뷰 열기 (MatchingView 클래스가 있다고 가정)
+            new MatchingView(); // 매칭 뷰 열기 (MatchingView 클래스가 있다고 가정)
         }); 
 
         //홈화면 가는 버튼 추가하기  + 사진도 붙일까?

@@ -8,19 +8,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import bunlisugo.server.model.Trash;
-import bunlisugo.server.dao.DBManager;
-import bunlisugo.server.dto.TrashDTO;
-
-
 
 public class TrashDAO {
 
-    //DB에서 랜덤으로 쓰레기 10개 가져오기  
-   public List<Trash> findRandom(int count) throws SQLException {
-        String sql = "SELECT name, type, image_path " +
-                     "FROM trashes ORDER BY RAND() LIMIT ?";
+    // DB에서 랜덤으로 쓰레기 N개 가져오기
+    public List<Trash> findRandom(int count) throws SQLException {
+        String sql =
+            "SELECT name, category, image_path " +
+            "FROM trash_types " +
+            "ORDER BY RAND() LIMIT ?";
+
         List<Trash> list = new ArrayList<>();
-        Trash trash =null;
+
         try (Connection conn = DBManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -28,13 +27,14 @@ public class TrashDAO {
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
-                    String name = rs.getString("name");
-                    String type = rs.getString("type");
-                    String image_path = rs.getString("image_path");
-                    trash = new Trash(name, type, image_path);
-                    System.out.println(image_path);
+                    String name       = rs.getString("name");
+                    String category   = rs.getString("category");   // 예전 type 컬럼
+                    String imagePath  = rs.getString("image_path");
 
-                    list.add(trash);        
+                    Trash trash = new Trash(name, category, imagePath);
+                    System.out.println(imagePath);
+
+                    list.add(trash);
                 }
             }
         }

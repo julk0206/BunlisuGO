@@ -3,8 +3,7 @@ package bunlisugo.client.view;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.JButton;
-
+//지워도 되는 거 같음
 public class MakeButton {
 	 Map<String, Integer> answer = new HashMap<>();
 	 public  String[] TrashImage = {

@@ -5,80 +5,95 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+//import bunlisugo.server.service.LoginService;
 
-import bunlisugo.client.controller.GameClient;
+import bunlisugo.client.GameClient;
 
 public class LoginView {
 
-    private JFrame frame;
-    private JTextField NameField;
-    private JTextField PasswordField;
-    private final GameClient client; // Main에서 넘겨준 GameClient를 보관
+private JFrame frame;
+private JTextField NameField;
+private JTextField PasswordField;
+private final GameClient client; // Main에서 넘겨준 GameClient를 보관
 
-    public LoginView(GameClient client) {
+
+	public LoginView(GameClient client) {
         // 외부 주입 client만 사용
         this.client = client;      
         this.client.setLoginView(this); // 로그인 뷰를 GameClient에 등록
 
         frame = new JFrame("Login View");
-        frame.setBounds(100, 100, 1200, 750);
+        frame.setBounds(100,100, 1200, 750);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         initialize();
         frame.setVisible(true);
     }
 
     private void initialize() {
+        // Initialization
         frame.getContentPane().setLayout(null); 
 
         JLabel 분리수GO = new JLabel("New label");
-        분리수GO.setBounds(411, 91, 348, 120);
-        frame.getContentPane().add(분리수GO);
-        
-        // 아이디 라벨   
-        JLabel NameMessageLabel = new JLabel("닉네임");
-        NameMessageLabel.setBounds(223, 243, 176, 66);
-        frame.getContentPane().add(NameMessageLabel);
-        
-        // 비밀번호 라벨 
-        JLabel PasswordMessageLabel = new JLabel("비밀번호");
-        PasswordMessageLabel.setBounds(223, 345, 176, 66);
-        frame.getContentPane().add(PasswordMessageLabel);
-        
-        // 아이디 입력창
-        NameField = new JTextField();
-        NameField.setBounds(430, 243, 323, 66);
-        frame.getContentPane().add(NameField);
-        NameField.setColumns(10);
-        
-        // 비밀번호 입력창
-        PasswordField = new JTextField();
-        PasswordField.setColumns(10);
-        PasswordField.setBounds(430, 345, 323, 66);
-        frame.getContentPane().add(PasswordField);
-        
-        // 로그인 버튼
-        JButton LoginButton = new JButton("로그인");
-        LoginButton.setBounds(481, 465, 221, 66);
+		분리수GO.setBounds(411, 91, 348, 120);
+		frame.getContentPane().add(분리수GO);
+		
+        //아이디 라벨   
+		JLabel NameMessageLabel = new JLabel("닉네임");
+		NameMessageLabel.setBounds(223, 243, 176, 66);
+		frame.getContentPane().add(NameMessageLabel);
+		
+        //비밀번호 라벨 
+		JLabel PasswordMessageLabel = new JLabel("비밀번호");
+		PasswordMessageLabel.setBounds(223, 345, 176, 66);
+		frame.getContentPane().add(PasswordMessageLabel);
+		
+        //아이디 입력창
+		NameField = new JTextField();
+		NameField.setBounds(430, 243, 323, 66);
+		frame.getContentPane().add(NameField);
+		NameField.setColumns(10);
+		
+        //비밀번호 입력창
+		PasswordField = new JTextField();
+		PasswordField.setColumns(10);
+		PasswordField.setBounds(430, 345, 323, 66);
+		frame.getContentPane().add(PasswordField);
+		
+        //로그인 버튼
+		JButton LoginButton = new JButton("로그인");
+		LoginButton.setBounds(481, 465, 221, 66);
         frame.getContentPane().add(LoginButton);
         
         LoginButton.addActionListener(e -> {
-            String username = NameField.getText();
-            String pw = PasswordField.getText();
-            
-            client.send("LOGIN|" + username + "|" + pw);
-            // 화면 전환은 서버에서 LOGIN_OK 왔을 때 onLoginSuccess에서 처리
-        });
-        
-        // 회원가입 버튼
-        JButton SignButton = new JButton("계정이 없으신가요? 회원가입 하러가기");
-        SignButton.setBounds(430, 549, 323, 45);
+            // 로그인 버튼 클릭 시 동작
+            // 예: 로그인 처리 및 홈 화면으로 전환
+            String username = NameField.getText();  
+            String password = PasswordField.getText();  
+            // 여기에 로그인 로직 추가 (예: 서버와 통신)    
+            if(username.isEmpty() || password.isEmpty()) {
+            	//경고창 띄우기
+            	System.out.println("아이디 또는 비밀번호를 입력하세요.");
+            	return;
+            }
+
+
+            frame.dispose(); // 현재 로그인 뷰 닫기
+            client.send("LOGIN|" + username + "|" + password);        });
+		
+		
+		//회원가입 버튼
+		JButton SignButton = new JButton("계정이 없으신가요? 회원가입 하러가기");
+		SignButton.setBounds(430, 549, 323, 45);
         SignButton.addActionListener(e -> {
-            frame.dispose();           // 현재 로그인 뷰 닫기
-            new SignView(client);     
+            // 회원가입 버튼 클릭 시 동작
+            // 예: 회원가입 화면으로 전환
+            frame.dispose(); // 현재 로그인 뷰 닫기
+            new SignView(GameClient.getInstance()); // 회원가입 뷰 열기 (SignView 클래스가 있다고 가정)
         });
-        frame.getContentPane().add(SignButton);
+		frame.getContentPane().add(SignButton); 
+
     }
-    
+
     public void onLoginSuccess(String username) {
         JOptionPane.showMessageDialog(frame, "로그인 성공: " + username);
         frame.dispose();

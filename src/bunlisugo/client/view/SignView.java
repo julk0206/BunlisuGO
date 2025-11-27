@@ -6,7 +6,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
-import bunlisugo.client.controller.GameClient;
+import bunlisugo.client.GameClient;
 
 public class SignView {
 

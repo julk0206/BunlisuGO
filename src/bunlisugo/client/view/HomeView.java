@@ -9,7 +9,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-import bunlisugo.client.controller.GameClient;
+import bunlisugo.client.GameClient;
 
 public class HomeView {
     private JFrame frame;
@@ -64,6 +64,7 @@ public class HomeView {
         frame.getContentPane().add(StartButton);
 		
         //랭킹 화면 이동 버튼
+                
         JButton goRankingViewButton = new JButton("현재 랭킹 2위");
 		goRankingViewButton.setBounds(956, 35, 187, 68);
         goRankingViewButton.addActionListener(e -> {

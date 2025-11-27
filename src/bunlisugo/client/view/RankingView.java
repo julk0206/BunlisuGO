@@ -5,7 +5,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 
-import bunlisugo.client.controller.GameClient;
+import bunlisugo.client.GameClient;
 
 public class RankingView {
 
