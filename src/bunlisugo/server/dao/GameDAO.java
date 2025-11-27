@@ -1,17 +1,14 @@
-package bunlisugo.server.repository;
+package bunlisugo.server.dao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-import bunlisugo.server.model.GameResult;
-import bunlisugo.server.model.GameSession;
+import bunlisugo.server.entity.GameResult;
+import bunlisugo.server.entity.GameSession;
+import bunlisugo.server.dao.DBManager;
+
+
+import java.sql.*;
+
 
 public class GameDAO {
     // 게임 세션 생성

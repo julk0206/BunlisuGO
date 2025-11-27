@@ -1,4 +1,4 @@
-package bunlisugo.client.controller;
+
 
 import java.io.PrintWriter;
 import java.io.BufferedReader;
@@ -17,17 +17,21 @@ public class GameClient {
     
     // 로그인 화면 참조
     private LoginView loginView;
-	public void setLoginView(LoginView loginView) {
+	private HomeView homeView;
+
+
+    public void setLoginView(LoginView loginView) {
         this.loginView = loginView;
     }
     
-    public void setHomeView(HomeView homeView) {
+    public void setHomeView(HomeView homeView) { 
+        this.homeView = homeView;
     }
 
 
     private GameClient() {
         try {
-            socket = new Socket("10.240.155.106", 3328);
+            socket = new Socket("10.240.193.80", 3328);
             System.out.println("Connected to server..");
 
             out = new PrintWriter(socket.getOutputStream(), true); // 서버로 문자열을 보냄
@@ -88,7 +92,7 @@ public class GameClient {
 
     // 테스트용 main
     public static void main(String[] args) {
-        GameClient.getInstance();
+        GameClient client = GameClient.getInstance();
         
     }
 }

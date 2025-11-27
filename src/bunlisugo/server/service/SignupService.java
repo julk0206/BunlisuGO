@@ -2,8 +2,8 @@ package bunlisugo.server.service;
 
 import java.sql.SQLException;
 
-import bunlisugo.server.model.User;
-import bunlisugo.server.repository.UserDAO;
+import bunlisugo.server.dao.UserDAO;
+import bunlisugo.server.entity.User;
 import bunlisugo.server.util.PasswordUtil;
 
 public class SignupService {

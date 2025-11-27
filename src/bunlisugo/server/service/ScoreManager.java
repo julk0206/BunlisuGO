@@ -1,6 +1,6 @@
 package bunlisugo.server.service;
 
-import bunlisugo.server.model.GameSession;
+import bunlisugo.server.entity.GameSession;
 
 public class ScoreManager {
 

@@ -57,14 +57,13 @@ public class HomeView {
             public void actionPerformed(ActionEvent e) {
                 // TODO Auto-generated method stub
                 frame.dispose();
-                new MatchingView();
+                new MatchingView(client);
             }
         });
         StartButton.setBounds(454, 448, 276, 117);
         frame.getContentPane().add(StartButton);
 		
         //랭킹 화면 이동 버튼
-                
         JButton goRankingViewButton = new JButton("현재 랭킹 2위");
 		goRankingViewButton.setBounds(956, 35, 187, 68);
         goRankingViewButton.addActionListener(e -> {

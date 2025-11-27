@@ -11,11 +11,12 @@ public class MatchingView {
 private JFrame frame;
 private GameClient client;
     
-    public MatchingView() {
+    public MatchingView(GameClient client) {
+    	this.client = client;
+    	
         frame = new JFrame("Matching View");
         frame.setBounds(100,100, 1200, 750);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
         
         initialize();
         frame.setVisible(true);
@@ -37,6 +38,7 @@ private GameClient client;
         CancelButton.setBounds(237, 478, 264, 82);
         CancelButton.addActionListener(e -> {
             // 취소 버튼 클릭 시 동작
+        	client.send("MATCH|CANCEL");
             // 예: 매칭 취소 및 홈 화면으로 돌아가기
             //frame.dispose(); // 현재 매칭 뷰 닫기
             new HomeView(client);
@@ -49,6 +51,7 @@ private GameClient client;
         JoinButton.setBounds(645, 478, 264, 82);
         JoinButton.addActionListener(e -> {
             // 참여하기 버튼 클릭 시 동작
+        	client.send("MATCH|JOIN");
             // 예: 게임 화면으로 전환
             //frame.dispose(); // 현재 매칭 뷰 닫기
             frame.dispose();

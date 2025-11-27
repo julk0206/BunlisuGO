@@ -1,4 +1,5 @@
-package bunlisugo.server.model;
+package bunlisugo.server.entity;
+
 
 import java.time.LocalDateTime;
 

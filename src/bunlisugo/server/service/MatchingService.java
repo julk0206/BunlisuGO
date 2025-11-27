@@ -1,7 +1,7 @@
 package bunlisugo.server.service;
 
 import bunlisugo.server.model.GameRoom;
-import bunlisugo.server.model.User;
+import bunlisugo.server.entity.User;
 
 import java.util.LinkedList;
 import java.util.Queue;

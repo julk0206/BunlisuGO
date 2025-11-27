@@ -1,4 +1,4 @@
-package bunlisugo.server.model;
+package bunlisugo.server.entity;
 
 public class GameResult {
     private int sessionId;

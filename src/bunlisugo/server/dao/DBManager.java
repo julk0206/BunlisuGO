@@ -1,12 +1,12 @@
-package bunlisugo.server.repository;
+package bunlisugo.server.dao;
 
 import java.sql.*;
 import java.sql.DriverManager;
 
-
 public class DBManager {
 
     private static final String url = "jdbc:mariadb://localhost:3306/trashgame?serverTimezone=UTC";
+
     private static final String username = "stdUser";
     private static final String password = "wkvmtlf2";
 

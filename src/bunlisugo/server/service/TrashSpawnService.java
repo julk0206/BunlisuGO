@@ -1,22 +1,24 @@
 package bunlisugo.server.service;
 
-import java.util.Random;
+import java.util.*;
 
-import bunlisugo.server.model.Trash;
-import bunlisugo.server.model.TrashData;
+import bunlisugo.server.dto.TrashDTO;
+import bunlisugo.server.entity.TrashType;
 
 public class TrashSpawnService {
 
+    private final Random random = new Random();
+
     // 랜덤 쓰레기 생성
-    public Trash spawnTrash(int maxX, int maxY) {
-            Trash trash = TrashData.randomTrashTemplate();
+    public TrashDTO spawnTrash(List<TrashType> types, int maxX, int maxY) {
+            TrashType selectedType = types.get(random.nextInt(types.size())); //랜덤 타입 선택
 
             // 랜덤 위치 설정
-            int randomX = new Random().nextInt(maxX + 1);
-            int randomY = new Random().nextInt(maxY + 1);
-            trash.setX(randomX);
-            trash.setY(randomY);
+            int x = new Random().nextInt(maxX + 1);
+            int y = new Random().nextInt(maxY + 1);
 
-            return trash;
+            TrashDTO randomTrash = new TrashDTO(selectedType, x, y, false); //쓰레기 객체 생성
+
+            return randomTrash;
     }
 }

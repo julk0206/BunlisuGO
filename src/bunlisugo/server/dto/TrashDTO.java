@@ -1,19 +1,79 @@
 package bunlisugo.server.dto;
 
-import bunlisugo.server.model.Trash;
+import bunlisugo.server.entity.TrashType;
 
 public class TrashDTO {
-    public String name;
-    public String type;
-    public String imagePath;
-    public int x;
-    public int y;
-
-    public TrashDTO(Trash t) {
-        this.name = t.getName();
-        this.type = t.getType().name();
-        this.imagePath = t.getImagePath();
-        this.x = t.getX();
-        this.y = t.getY();
+    private String name;
+    private String category;
+    private String imagePath;
+    private int x;
+    private int y;
+    private boolean isCollected;
+    private Integer collectorId;
+    
+        public TrashDTO(TrashType type, int x, int y, boolean isCollected) {
+        this.name = type.getName();
+        this.category = type.getCategory();
+        this.imagePath = type.getImagePath();
+        this.x = x;
+        this.y = y;
+        this.isCollected = false;
     }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getCategory() {
+        return this.category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public String getImagePath() {
+        return this.imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
+
+    public int getX() {
+        return this.x;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public int getY() {
+        return this.y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    public boolean isIsCollected() {
+        return this.isCollected;
+    }
+
+    public void setIsCollected(boolean isCollected) {
+        this.isCollected = isCollected;
+    }
+
+    public Integer getCollectorId() {
+        return this.collectorId;
+    }
+
+    public void setCollectorId(Integer collectorId) {
+        this.collectorId = collectorId;
+    }
+
 }
