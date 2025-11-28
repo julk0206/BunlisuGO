@@ -26,6 +26,8 @@ public class GameController {
     private JFrame frame;
 
     private int score = 0;
+    private final int correct_score = 5;
+    private final int wrong_score = 2;
     private int trashNumber = 10;
 
     private Random random = new Random();
@@ -114,7 +116,7 @@ public class GameController {
             return;
         }
 
-        // 🔥 원본 아이콘
+        // 원본 아이콘
         ImageIcon originalIcon = new ImageIcon(imgUrl);
 
         // 아이콘 크기 지정
@@ -183,24 +185,49 @@ public class GameController {
     //어떤 통 위에 놓였는지 + 타입 맞는지 체크
     private void checkDrop(JButton btn, TrashType type) {
         JPanel[] boxes = trashBoxPanel.getBoxes();
+        if (boxes == null) return;
 
-        Rectangle btnBounds = btn.getBounds();
+        // 버튼 영역: frame의 contentPane 기준 좌표
+        Rectangle btnRectOnRoot = SwingUtilities.convertRectangle(
+                btn.getParent(), 
+                btn.getBounds(),
+                frame.getContentPane()
+        );
 
         for (int i = 0; i < boxes.length; i++) {
-            Rectangle boxBounds = SwingUtilities.convertRectangle(
-                    btn.getParent(), btnBounds, trashBoxPanel);
+            JPanel box = boxes[i];
+            if (box == null) continue;
 
-            Rectangle target = boxes[i].getBounds();
+            // 각 쓰레기통 박스 영역도 frame 기준으로 변환
+            Rectangle boxRectOnRoot = SwingUtilities.convertRectangle(
+                    trashBoxPanel,          // 박스의 부모(TrashBoxPanel)
+                    box.getBounds(),
+                    frame.getContentPane()
+            );
 
-            if (boxBounds.intersects(target)) {
+            // 디버그용 로그 (원하면 지워도 됨)
+            // System.out.println("btn=" + btnRectOnRoot + " box[" + i + "]=" + boxRectOnRoot);
+
+            if (btnRectOnRoot.intersects(boxRectOnRoot)) {
                 // 이 박스의 정답 타입
                 TrashType boxType = trashBoxPanel.getBoxType(i);
-                if (boxType == type) {
-                    score += 10;
-                    System.out.println("정답! 현재 점수: " + score);
+                boolean correct = (boxType == type);
+
+                if (correct) {
+                    score += correct_score;
                 } else {
-                    System.out.println("오답! 현재 점수: " + score);
+                	score -= wrong_score;
+                	if (score < 0) {
+                		score = 0;
+                	}
                 }
+                System.out.println(
+                    "판정 → trash type=" + type +
+                    ", trashbox type=" + boxType +
+                    ", " + (correct ? "정답" : "오답") +
+                    ", 현재 점수=" + score
+                );
+
                 btn.setVisible(false);
                 trashButtons.remove(btn);
                 frame.getContentPane().remove(btn);
@@ -208,6 +235,9 @@ public class GameController {
                 return;
             }
         }
-        // 아무 박스에도 안 떨어졌으면 그냥 놔두기
+        // 어떤 박스에도 안 떨어졌으면 아무 일 X
     }
+
+
 }
+
