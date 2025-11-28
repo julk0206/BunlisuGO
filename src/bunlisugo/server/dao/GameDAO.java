@@ -4,6 +4,7 @@ import java.util.*;
 
 import bunlisugo.server.entity.GameResult;
 import bunlisugo.server.entity.GameSession;
+import bunlisugo.server.entity.Ranking;
 import bunlisugo.server.dao.DBManager;
 
 
@@ -142,4 +143,56 @@ public class GameDAO {
         }
         return results;
     }
+
+    // 랭킹 점수 업데이트
+    public boolean updateRankingScore(int userId, int rankingScore) throws SQLException {
+
+        String sql = "UPDATE users SET rankingScore = rankingScore + ? WHERE user_id = ?";
+
+        try (Connection conn = DBManager.getConnection();
+        PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, rankingScore);
+            pstmt.setInt(2, userId);
+
+            return pstmt.executeUpdate() > 0;
+        }
+    }
+
+
+    // 랭킹 리스트 조회
+    public List<Ranking> getRankingList(int limit) throws SQLException {
+
+        
+        String sql = "SELECT u.user_id, u.username, SUM(g.score) AS total_score " +
+                 "FROM game_results g " +
+                 "JOIN user u ON g.player_id = u.user_id " +
+                 "GROUP BY u.user_id, u.username " +
+                 "ORDER BY total_score DESC " +
+                 "LIMIT ?";
+
+        List<Ranking> list = new ArrayList<>();
+
+        try (Connection conn = DBManager.getConnection();
+        PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, limit);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while(rs.next()) {
+                    Ranking ranking = new Ranking(
+                        rs.getInt("user_id"),
+                        rs.getString("username"),
+                        rs.getInt("total_score")
+                    );
+                    list.add(ranking);
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+        return list;
+    }
+
 }

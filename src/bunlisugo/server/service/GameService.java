@@ -142,6 +142,8 @@ public class GameService {
     public void endGame() throws SQLException {
         // 승자 결정
         Integer winnerId = determineWinner();
+        int player1Id = session.getPlayer1Id();
+        int player2Id = session.getPlayer2Id();
 
         // 게임 종료 정보 업데이트
         gameDAO.endGameSession(session.getSessionId(), winnerId);
@@ -150,6 +152,21 @@ public class GameService {
         List<GameResult> results = getGameResults();
         for (GameResult result : results) {
             gameDAO.saveGameRecord(result);
+        }
+
+        // 랭킹 DB 업데이트
+        if (winnerId == player1Id) {
+            int loserId = player2Id;
+
+            gameDAO.updateRankingScore(winnerId, +10);
+            gameDAO.updateRankingScore(loserId, -5);
+
+        } else {
+            int loserId = player1Id;
+
+            gameDAO.updateRankingScore(winnerId, +10);
+            gameDAO.updateRankingScore(loserId, -5);
+
         }
 
     }
