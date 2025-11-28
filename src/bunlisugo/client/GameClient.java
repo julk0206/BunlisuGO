@@ -35,7 +35,7 @@ public class GameClient {
 
     private GameClient() {
         try {
-            socket = new Socket("10.240.63.25", 3328);
+            socket = new Socket("10.240.34.57", 3328); //서버 컴퓨터의 
             System.out.println("Connected to server..");
 
             out = new PrintWriter(socket.getOutputStream(), true);

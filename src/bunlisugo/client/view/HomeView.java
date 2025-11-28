@@ -1,6 +1,7 @@
 package bunlisugo.client.view;
 
 import java.awt.Font;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -47,15 +48,17 @@ public class HomeView {
         // 게임 로고 이미지
         JLabel logoImageLabel = new JLabel();
         ImageIcon logoImage = null;
+        Image scaled = null;
 
         java.net.URL imgUrl = getClass().getResource("/images/logo.png");
         if (imgUrl != null) {
             logoImage = new ImageIcon(imgUrl);
+            scaled = logoImage.getImage().getScaledInstance(logoImageLabel.getWidth(),logoImageLabel.getHeight(),Image.SCALE_SMOOTH);
         } else {
             System.out.println("이미지 파일을 찾을 수 없습니다: /images/logo.png");
         }
 
-        logoImageLabel.setIcon(logoImage);
+        logoImageLabel.setIcon(new ImageIcon(scaled));
         logoImageLabel.setBounds(266, 230, 348, 208);
         frame.getContentPane().add(logoImageLabel);
 

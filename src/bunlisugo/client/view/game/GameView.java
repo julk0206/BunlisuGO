@@ -45,3 +45,5 @@ public class GameView {
         frame.getContentPane().add(trashBox);
     }
 }
+
+
