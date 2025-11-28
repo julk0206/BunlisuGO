@@ -161,7 +161,7 @@ public class GameService {
             gameDAO.updateRankingScore(winnerId, +10);
             gameDAO.updateRankingScore(loserId, -5);
 
-        } else {
+        } else if (winnerId == player2Id) {
             int loserId = player1Id;
 
             gameDAO.updateRankingScore(winnerId, +10);
