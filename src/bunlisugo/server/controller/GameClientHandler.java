@@ -98,7 +98,7 @@ public class GameClientHandler extends Thread {
         handler.handle(parts, this);
     }
 
-    /* ===== 세션 상태 & 전송 헬퍼 ===== */
+    // 세션 상태 & 전송
 
     public void send(String msg) {
         out.println(msg);

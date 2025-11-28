@@ -15,6 +15,7 @@ import javax.swing.SwingUtilities;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import bunlisugo.client.GameClient;
 import bunlisugo.client.model.TrashType;
 import bunlisugo.client.view.game.TimePanel;
 import bunlisugo.client.view.game.TrashBoxPanel;
@@ -29,6 +30,7 @@ public class GameController {
     private final int correct_score = 5;
     private final int wrong_score = 2;
     private int trashNumber = 10;
+    private  GameClient client;
 
     private Random random = new Random();
     private List<JButton> trashButtons = new ArrayList<>();
@@ -236,8 +238,21 @@ public class GameController {
             }
         }
         // 어떤 박스에도 안 떨어졌으면 아무 일 X
+        
+        // 쓰레기 다 처리했으면
+        if (trashButtons.isEmpty()) {
+            gameOver();
+        }
     }
 
+    // 게임 오버
+    public void gameOver() {
+        if (client != null) {
+            // 팀에서 정한 프로토콜 형식 아무거나: 예) GAME_RESULT|점수
+            client.send("GAME_RESULT|" + score);
+        }
+        System.out.println("게임 종료, 최종 점수 = " + score);
+    }
 
 }
 

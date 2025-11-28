@@ -101,7 +101,7 @@ public class GameClient {
             case "MATCH_FOUND":
                 matchingView.onMatchFound();
                 break;
-
+            
         
         }
     }
