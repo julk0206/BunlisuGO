@@ -10,6 +10,7 @@ public class GameView {
     private TimePanel timePanel;
     private GameController gameController;
     private TrashBoxPanel trashBox;  
+    private GameScorePanel gamescorePanel;
 
     public GameView(TimePanel timePanel, GameController gameController, TrashBoxPanel trashBox) {
         this.timePanel = timePanel;
@@ -19,6 +20,7 @@ public class GameView {
         makeGameView();
         addTimePanel();
         addTrashBox();
+        addScorePanel();
 
         // 컨트롤러에 프레임/패널 연결 후 게임 시작
         gameController.setFrame(frame);
@@ -44,4 +46,12 @@ public class GameView {
     private void addTrashBox() {
         frame.getContentPane().add(trashBox);
     }
+
+    private void addScorePanel(){
+        frame.getContentPane().add(gamescorePanel.getplayer1JPanel());
+        frame.getContentPane().add(gamescorePanel.getplayer2JPanel());
+
+    }
 }
+
+

@@ -5,6 +5,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
+import bunlisugo.client.model.User;
 import bunlisugo.client.view.HomeView;
 import bunlisugo.client.view.LoginView;
 import bunlisugo.client.view.MatchingView;
@@ -15,6 +16,7 @@ public class GameClient {
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in;
+    private User currentUser;
     
     // 화면 참조
     private LoginView loginView;
@@ -33,9 +35,14 @@ public class GameClient {
         this.matchingView = matchingView;
     }
 
+    public User getCurrentUser(){
+        return currentUser;
+    }
+
     private GameClient() {
         try {
-            socket = new Socket("192.168.68.58", 3328);
+            socket = new Socket("10.240.34.57", 3328); //서버 컴퓨터의 
+
             System.out.println("Connected to server..");
 
             out = new PrintWriter(socket.getOutputStream(), true);
@@ -83,6 +90,8 @@ public class GameClient {
             case "LOGIN_OK":
                 if (loginView != null) {
                     String username = parts.length > 1 ? parts[1] : "";
+                    currentUser = new User();
+                    currentUser.setUsername(username);
                     loginView.onLoginSuccess(username);
                 }
                 break;
