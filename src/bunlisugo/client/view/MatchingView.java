@@ -92,7 +92,7 @@ public class MatchingView {
 
     public void onMatchFound() {
         frame.dispose();
-        GameScorePanel gamescorePanel;
-        new GameView(timePanel, gameController, trashBox); //근데 이거를 여기에 넣어야 되나..?
+        GameScorePanel gamescorePanel = new GameScorePanel(); //근데 이거를 여기에 넣어야 되나..?
+        new GameView(timePanel, gameController, trashBox, gamescorePanel);
     }
 }

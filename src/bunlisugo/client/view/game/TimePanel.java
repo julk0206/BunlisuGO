@@ -1,15 +1,26 @@
 package bunlisugo.client.view.game;
 
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+
+import bunlisugo.client.controller.GameController;
 
 public class TimePanel extends JPanel {
 
     private JLabel timeLabel;
     private Timer timer;
     private int remainingSeconds;  // 남은 시간(초)
+
+    private GameController controller;
+
+    public void setGameController(GameController controller) {
+        this.controller = controller;
+    }
 
     public TimePanel() {
         setBackground(Color.MAGENTA);
@@ -26,17 +37,27 @@ public class TimePanel extends JPanel {
             timer.stop();
         }
 
-        timer = new Timer(1000, e -> {
-            if (remainingSeconds <= 0) {
-                timer.stop();
-                timeLabel.setText("시간: 00:00");
-                return;
+        timer = new Timer(1000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (remainingSeconds <= 0) {
+                    timer.stop();
+                    timeLabel.setText("시간: 00:00");
+
+                    // 게임 종료 알림
+                    if (controller != null) {
+                        controller.onTimeOver();
+                    }
+                    return;
+                }
+
+                remainingSeconds--;
+                int m = remainingSeconds / 60;
+                int s = remainingSeconds % 60;
+                timeLabel.setText(String.format("시간: %02d:%02d", m, s));
             }
-            remainingSeconds--;
-            int m = remainingSeconds / 60;
-            int s = remainingSeconds % 60;
-            timeLabel.setText(String.format("시간: %02d:%02d", m, s));
         });
+
         timer.start();
     }
 

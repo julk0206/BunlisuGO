@@ -72,5 +72,5 @@ public class TrashBoxPanel extends JPanel {
         return boxTypes[index];
     }
 
-    
 }
+
