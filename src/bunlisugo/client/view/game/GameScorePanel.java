@@ -3,33 +3,32 @@ package bunlisugo.client.view.game;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import bunlisugo.client.GameClient;
+import bunlisugo.client.model.User;
 import bunlisugo.server.service.ScoreManager;
 
 public class GameScorePanel {
+    private JPanel player1Panel;
+    private JPanel player2Panel;
+
     
-    public JPanel GameScorePanel() {
-        JPanel scorePanel = new JPanel();   
-        scorePanel.setBounds(0, 0, 1200, 300); //자식 패널들에게 위치 줄건데 얘를 해야하나¿
-        scorePanel.setLayout(null);
+    public GameScorePanel() {
 
-        scorePanel.add(player1Panel());
-        scorePanel.add(player2Panel()); 
+        player1Panel = new JPanel();        
+        player2Panel = new JPanel();
 
-        player1Panel().setBounds(71, 34, 166, 53); //임시로 위치 잡아둠
-        player2Panel().setBounds(938, 34, 166, 53); 
-
-
-        return scorePanel;
+        player1Panel.setBounds(71, 34, 166, 53); //임시로 위치 잡아둠
+        player2Panel.setBounds(938, 34, 166, 53); 
     } 
 
-    private JPanel player1Panel() {
-        JPanel player1Panel = new JPanel();
-        //player1ScorePanel.setBounds(0, 0, 300, 300);
-        player1Panel.setLayout(null);
+    private void player1Panel(JPanel playerpanel) {
+        this.player1Panel = playerpanel;
+        player1Panel.setLayout(null); //이건 언제? 몇 번째줄에?
 
-        //예은님꺼랑 연결해서 이름 받아와야할것같음 아직 잘 모르겟어 
-        JLabel player1NameLabel = new JLabel("Player 1 Score:");
-        player1NameLabel.setBounds(10, 10, 150, 30);
+        User user = GameClient.getInstance().getCurrentUser();
+        String player1name = user.getUsername();
+        JLabel player1NameLabel = new JLabel(player1name + "\n 점수: " );
+        
         player1Panel.add(player1NameLabel);
         
         //점수 받아오는 거
@@ -44,7 +43,6 @@ public class GameScorePanel {
         player1Panel.add(player1ScoreLabel);
 
 
-        return player1Panel;
     }
 
     private JPanel player2Panel() {
@@ -69,6 +67,14 @@ public class GameScorePanel {
         player2Panel.add(player2NameLabel);
 
 
+        return player2Panel;
+    }
+
+
+    public JPanel getplayer1JPanel(){
+        return player1Panel;
+    }
+    public JPanel getplayer2JPanel(){
         return player2Panel;
     }
 

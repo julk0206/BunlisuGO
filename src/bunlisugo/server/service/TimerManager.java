@@ -5,10 +5,15 @@ import java.time.Instant;
 public class TimerManager {
 
     private final long gameDuration; 
-    private final Instant startTime;
+    private Instant startTime;
 
     public TimerManager(long seconds) {
         this.gameDuration = seconds * 1000; // milliseconds
+        this.startTime = null;
+    }
+
+    public void startTimer() {
+        // 게임 시작 시간 기록
         this.startTime = Instant.now();
     }
 

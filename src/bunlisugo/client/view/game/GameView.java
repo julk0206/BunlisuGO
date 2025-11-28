@@ -10,22 +10,28 @@ public class GameView {
     private TimePanel timePanel;
     private GameController gameController;
     private TrashBoxPanel trashBox;  
+    private GameScorePanel gamescorePanel;
 
-    public GameView(TimePanel timePanel, GameController gameController, TrashBoxPanel trashBox) {
+    public GameView(TimePanel timePanel, GameController gameController, TrashBoxPanel trashBox, GameScorePanel gamescorePanel) {
         this.timePanel = timePanel;
         this.gameController = gameController;
         this.trashBox = trashBox;
+        this.gamescorePanel = gamescorePanel;
 
         makeGameView();
         addTimePanel();
         addTrashBox();
+        addScorePanel();
 
         // 컨트롤러에 프레임/패널 연결 후 게임 시작
         gameController.setFrame(frame);
         gameController.setTimePanel(timePanel);
         gameController.setTrashBoxPanel(trashBox);
-        frame.setVisible(true);
+        timePanel.setGameController(gameController);
+
         gameController.startGame();
+
+        frame.setVisible(true);
     }
     
     private void makeGameView() {
@@ -43,4 +49,11 @@ public class GameView {
     private void addTrashBox() {
         frame.getContentPane().add(trashBox);
     }
+
+    private void addScorePanel(){
+        frame.getContentPane().add(gamescorePanel.getplayer1JPanel());
+        frame.getContentPane().add(gamescorePanel.getplayer2JPanel());
+
+    }
 }
+

@@ -71,4 +71,6 @@ public class TrashBoxPanel extends JPanel {
     public TrashType getBoxType(int index) {
         return boxTypes[index];
     }
+
+    
 }

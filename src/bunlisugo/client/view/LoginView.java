@@ -76,9 +76,9 @@ private final GameClient client; // Main에서 넘겨준 GameClient를 보관
             	return;
             }
 
-
             frame.dispose(); // 현재 로그인 뷰 닫기
-            client.send("LOGIN|" + username + "|" + password);        });
+            client.send("LOGIN|" + username + "|" + password); 
+        });
 		
 		
 		//회원가입 버튼
