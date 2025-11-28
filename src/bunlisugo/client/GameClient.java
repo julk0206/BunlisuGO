@@ -5,6 +5,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
+import bunlisugo.client.model.User;
 import bunlisugo.client.view.HomeView;
 import bunlisugo.client.view.LoginView;
 import bunlisugo.client.view.MatchingView;
@@ -15,6 +16,7 @@ public class GameClient {
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in;
+    private User currentUser;
     
     // 화면 참조
     private LoginView loginView;
@@ -31,6 +33,10 @@ public class GameClient {
     
     public void setMatchingView(MatchingView matchingView) {  
         this.matchingView = matchingView;
+    }
+
+    public User getCurrentUser(){
+        return currentUser;
     }
 
     private GameClient() {
@@ -83,6 +89,8 @@ public class GameClient {
             case "LOGIN_OK":
                 if (loginView != null) {
                     String username = parts.length > 1 ? parts[1] : "";
+                    currentUser = new User();
+                    currentUser.setUsername(username);
                     loginView.onLoginSuccess(username);
                 }
                 break;

@@ -6,6 +6,7 @@ import javax.swing.JLabel;
 
 import bunlisugo.client.GameClient;
 import bunlisugo.client.controller.GameController;
+import bunlisugo.client.view.game.GameScorePanel;
 import bunlisugo.client.view.game.GameView;
 import bunlisugo.client.view.game.TimePanel;
 import bunlisugo.client.view.game.TrashBoxPanel;
@@ -91,6 +92,7 @@ public class MatchingView {
 
     public void onMatchFound() {
         frame.dispose();
-        new GameView(timePanel, gameController, trashBox);
+        GameScorePanel gamescorePanel;
+        new GameView(timePanel, gameController, trashBox); //근데 이거를 여기에 넣어야 되나..?
     }
 }
