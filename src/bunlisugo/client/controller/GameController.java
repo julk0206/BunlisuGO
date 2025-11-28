@@ -1,6 +1,7 @@
 package bunlisugo.client.controller;
 
 import java.awt.Rectangle;
+import java.awt.Image;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,8 +25,8 @@ public class GameController {
     private TrashBoxPanel trashBoxPanel;
     private JFrame frame;
 
-    private javax.swing.Timer spawnTimer;
     private int score = 0;
+    private int trashNumber = 10;
 
     private Random random = new Random();
     private List<JButton> trashButtons = new ArrayList<>();
@@ -42,18 +43,61 @@ public class GameController {
         this.frame = frame;
     }
 
-    /** 게임 시작할 때 GameView에서 호출 */
+    // 게임 시작할 때 GameView에서 호출
     public void startGame() {
         if (timePanel != null) {
             timePanel.startTimer(60); // 60초 게임
         }
 
-        // 1.5초마다 쓰레기 하나 생성
-        spawnTimer = new javax.swing.Timer(1500, e -> spawnRandomTrash());
-        spawnTimer.start();
+        // 생성할 쓰레기 수를 필드에서 정해줌
+        for (int i = 0; i < trashNumber; i++) {
+            spawnRandomTrash();
+        }
+    }
+    
+    //이미지 경로 가져옴
+    private String getRandomImagePath(TrashType type) {
+        String[] candidates = null;
+
+        switch (type) {
+            case PLASTIC -> {
+                candidates = new String[] {
+                    "/images/trash/plastic/delivery_clean.png",
+                    "/images/trash/plastic/PlasticBottle.png",
+                    "/images/trash/plastic/PlasticCup.png"
+                };
+            }
+            case GLASSCAN -> {
+                candidates = new String[] {
+                    "/images/trash/glasscan/aluminumcan.png",
+                    "/images/trash/glasscan/beer.png",
+                    "/images/trash/glasscan/soju.png"
+                };
+            }
+            case PAPER -> {
+                candidates = new String[] {
+                    "/images/trash/paper/newspaper.png",
+                    "/images/trash/paper/postit.png"
+                };
+            }
+            case GENERAL -> {
+                candidates = new String[] {
+                    "/images/trash/general/brokenglass.png",
+                    "/images/trash/general/ceramic.png",
+                    "/images/trash/general/delivery_dirty.png",
+                    "/images/trash/general/fruitnet.png",
+                    "/images/trash/general/receipt.png",
+                    "/images/trash/general/toothpaste.png"
+                };
+            }
+           
+        }
+
+        return candidates[random.nextInt(candidates.length)];
     }
 
-    /** 쓰레기 하나 랜덤으로 생성해서 프레임에 추가 */
+
+    //쓰레기 하나 랜덤으로 생성해서 프레임에 추가
     private void spawnRandomTrash() {
         if (frame == null || trashBoxPanel == null) return;
 
@@ -61,13 +105,8 @@ public class GameController {
         TrashType[] types = TrashType.values();
         TrashType type = types[random.nextInt(types.length)];
 
-        // 아이콘 경로 (네 이미지 구조에 맞게 수정)
-        String imagePath = switch (type) {
-            case PAPER -> "/images/trash/paper/paper1.png";
-            case PLASTIC -> "/images/trash/plastic/plastic1.png";
-            case GLASSCAN -> "/images/trash/glasscan/can1.png";
-            case GENERAL -> "/images/trash/general/general1.png";
-        };
+        // 아이콘 경로
+        String imagePath = getRandomImagePath(type);
 
         java.net.URL imgUrl = getClass().getResource(imagePath);
         if (imgUrl == null) {
@@ -75,13 +114,21 @@ public class GameController {
             return;
         }
 
-        ImageIcon icon = new ImageIcon(imgUrl);
+        // 🔥 원본 아이콘
+        ImageIcon originalIcon = new ImageIcon(imgUrl);
+
+        // 아이콘 크기 지정
+        int width = 120;
+        int height = 120;
+
+        // 아이콘 크기를 120 * 120으로 맞춤
+        Image scaledImage = originalIcon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
+        ImageIcon icon = new ImageIcon(scaledImage);
+
         JButton trashBtn = new JButton(icon);
         trashBtn.setBorderPainted(false);
         trashBtn.setContentAreaFilled(false);
-
-        int width = icon.getIconWidth();
-        int height = icon.getIconHeight();
+        trashBtn.setFocusPainted(false);
 
         // 프레임 안에서 랜덤 위치 (윗부분)
         int maxX = frame.getWidth() - width - 50;
@@ -99,7 +146,8 @@ public class GameController {
         frame.repaint();
     }
 
-    /** 드래그해서 놓았을 때 점수 판정 */
+
+    //드래그해서 놓았을 때 점수 판정
     private void addDragAndDrop(JButton btn, TrashType type) {
         MouseAdapter ma = new MouseAdapter() {
             Point initialClick;
@@ -132,7 +180,7 @@ public class GameController {
         btn.addMouseMotionListener(ma);
     }
 
-    /** 어떤 통 위에 놓였는지 + 타입 맞는지 체크 */
+    //어떤 통 위에 놓였는지 + 타입 맞는지 체크
     private void checkDrop(JButton btn, TrashType type) {
         JPanel[] boxes = trashBoxPanel.getBoxes();
 

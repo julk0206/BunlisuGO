@@ -20,7 +20,7 @@ public class GameView {
         addTimePanel();
         addTrashBox();
 
-        // 🔥 컨트롤러에 프레임/패널 연결 후 게임 시작
+        // 컨트롤러에 프레임/패널 연결 후 게임 시작
         gameController.setFrame(frame);
         gameController.setTimePanel(timePanel);
         gameController.setTrashBoxPanel(trashBox);
