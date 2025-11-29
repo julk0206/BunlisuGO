@@ -81,7 +81,7 @@ public class UserDAO {
                         rs.getString("password_hash"),
                         rs.getInt("ranking_score"),
                         rs.getTimestamp("created_at").toLocalDateTime()
-                    );
+                        );
                     }
                 } catch (SQLException e) {
                     e.printStackTrace();

@@ -12,6 +12,7 @@ import javax.swing.JLabel;
 
 import bunlisugo.client.GameClient;
 import bunlisugo.client.controller.GameController;
+import bunlisugo.client.model.GameState;
 import bunlisugo.client.view.game.TimePanel;
 import bunlisugo.client.view.game.TrashBoxPanel;
 
@@ -90,6 +91,10 @@ public class HomeView {
         goRankingViewButton.setBounds(956, 35, 187, 68);
         goRankingViewButton.addActionListener(e -> {
             frame.dispose();
+            GameState state = client.getGameState();
+            String username = state.getMyName();
+            int finalScore = state.getMyScore();
+
             new RankingView();   // 지금 RankingView는 GameClient 안 넘기고 있음
         });
         frame.getContentPane().add(goRankingViewButton);

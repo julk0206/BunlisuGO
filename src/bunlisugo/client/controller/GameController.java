@@ -18,7 +18,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 import bunlisugo.client.GameClient;
+import bunlisugo.client.model.GameState;
 import bunlisugo.client.model.TrashType;
+import bunlisugo.client.view.ResultView;
+import bunlisugo.client.view.game.GameScorePanel;
 import bunlisugo.client.view.game.TimePanel;
 import bunlisugo.client.view.game.TrashBoxPanel;
 
@@ -43,8 +46,17 @@ public class GameController {
     private List<JButton> trashButtons = new ArrayList<JButton>();
     private GameClient client;
 
+    private GameScorePanel gameScorePanel;
+    private GameState gameState;
+
     // 게임이 이미 끝났는지 여부(중복 종료 방지)
     private boolean gameEnded = false;
+
+    public GameController(GameClient client) {
+        this.client = client;
+    }
+
+    public GameController() {}
 
     public void setTimePanel(TimePanel timePanel) {
         this.timePanel = timePanel;
@@ -62,29 +74,16 @@ public class GameController {
         this.client = client;
     }
 
-    // 게임 시작할 때 GameView에서 호출
+    public void setGameScorePanel(GameScorePanel panel) {
+        this.gameScorePanel = panel;
+    }
+
     public void startGame() {
-        gameEnded = false;       // 새 게임이니까 초기화
-        spawnedCount = 0;
+        gameEnded = false;
+    }
 
-        if (timePanel != null) {
-            timePanel.startTimer(60); // 60초 게임
-        }
-
-        spawnTimer = new Timer(spawnIntervalMs, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (spawnedCount >= maxTrashCount) {
-                    spawnTimer.stop();
-                    return;
-                }
-
-                spawnRandomTrash();
-                spawnedCount++;
-            }
-        });
-
-        spawnTimer.start();
+    public void setGameState(GameState state) {
+        this.gameState = state;
     }
 
     // 60초 끝나면 TimePanel에서 호출
@@ -98,56 +97,12 @@ public class GameController {
         gameOver();
     }
 
-    // --- 이미지 경로 선택 ---
-    private String getRandomImagePath(TrashType type) {
-        String[] candidates = null;
-
-        switch (type) {
-            case PLASTIC -> {
-                candidates = new String[] {
-                    "/images/trash/plastic/delivery_clean.png",
-                    "/images/trash/plastic/PlasticBottle.png",
-                    "/images/trash/plastic/PlasticCup.png"
-                };
-            }
-            case GLASSCAN -> {
-                candidates = new String[] {
-                    "/images/trash/glasscan/aluminumcan.png",
-                    "/images/trash/glasscan/beer.png",
-                    "/images/trash/glasscan/soju.png"
-                };
-            }
-            case PAPER -> {
-                candidates = new String[] {
-                    "/images/trash/paper/newspaper.png",
-                    "/images/trash/paper/postit.png"
-                };
-            }
-            case GENERAL -> {
-                candidates = new String[] {
-                    "/images/trash/general/brokenglass.png",
-                    "/images/trash/general/ceramic.png",
-                    "/images/trash/general/delivery_dirty.png",
-                    "/images/trash/general/fruitnet.png",
-                    "/images/trash/general/receipt.png",
-                    "/images/trash/general/toothpaste.png"
-                };
-            }
-        }
-
-        return candidates[random.nextInt(candidates.length)];
-    }
 
     // 쓰레기 하나 랜덤으로 생성해서 프레임에 추가
-    private void spawnRandomTrash() {
+    private void spawnTrash(String name, String category,String imagePath, int x, int y) {
         if (frame == null || trashBoxPanel == null || gameEnded) return;
 
-        // 랜덤 타입
-        TrashType[] types = TrashType.values();
-        TrashType type = types[random.nextInt(types.length)];
-
-        // 아이콘 경로
-        String imagePath = getRandomImagePath(type);
+        TrashType type = TrashType.valueOf(category.toUpperCase()); // 서버에서 보내준 category 활용
 
         java.net.URL imgUrl = getClass().getResource(imagePath);
         if (imgUrl == null) {
@@ -166,12 +121,6 @@ public class GameController {
         JButton trashBtn = new JButton(icon);
         trashBtn.setBorderPainted(false);
         trashBtn.setContentAreaFilled(false);
-
-        // 프레임 안에서 랜덤 위치 (윗부분)
-        int maxX = frame.getWidth() - width - 50;
-        int maxY = 300; // 쓰레기통 위쪽까지만
-        int x = 50 + random.nextInt(Math.max(maxX, 50));
-        int y = 100 + random.nextInt(Math.max(maxY, 50));
 
         trashBtn.setBounds(x, y, width, height);
 
@@ -251,6 +200,9 @@ public class GameController {
                     ", 현재 점수=" + score
                 );
 
+                client.send("SCORE|" + score);
+                gameScorePanel.updateMyScore(score);
+
                 btn.setVisible(false);
                 trashButtons.remove(btn);
                 frame.getContentPane().remove(btn);
@@ -287,4 +239,28 @@ public class GameController {
 
         System.out.println("게임 종료! 최종 점수 = " + score);
     }
+
+    public void showResult(String winnerId) {
+        // 모델에서 점수와 이름 가져오기
+        String myName = gameState.getMyName();
+        String opponentName = gameState.getOpponentName();
+        int myScore = gameState.getMyScore();
+        int opponentScore = gameState.getOpponentScore();
+
+        // 승패 텍스트 결정
+        String resultText;
+        if (winnerId.equals(myName)) {
+            resultText = "YOU WIN!";
+        } else if (winnerId.equals(opponentName)) {
+            resultText = "YOU LOSE!";
+        } else {
+            resultText = "DRAW!";
+        }
+
+        // Swing UI 업데이트 (ResultView 생성)
+        javax.swing.SwingUtilities.invokeLater(() -> {
+            new ResultView(client, resultText, myScore, opponentScore);
+        });
+    }
+
 }

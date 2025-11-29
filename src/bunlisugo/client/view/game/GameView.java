@@ -27,7 +27,7 @@ public class GameView {
         gameController.setFrame(frame);
         gameController.setTimePanel(timePanel);
         gameController.setTrashBoxPanel(trashBox);
-        timePanel.setGameController(gameController);
+        gameController.setGameScorePanel(gamescorePanel);
 
         gameController.startGame();
 
