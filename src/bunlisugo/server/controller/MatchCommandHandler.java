@@ -1,11 +1,13 @@
-// BunlisuGo/src/bunlisugo/server/controller/MatchCommandHandler.java
 package bunlisugo.server.controller;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Logger;
 
-import bunlisugo.server.entity.User;
+import bunlisugo.server.dao.GameDAO;
+import bunlisugo.server.dao.UserDAO;
 import bunlisugo.server.entity.GameSession;
+import bunlisugo.server.entity.User;
 import bunlisugo.server.model.GameRoom;
 import bunlisugo.server.service.GameSessionInstance;
 import bunlisugo.server.service.MatchingService;
@@ -17,6 +19,9 @@ public class MatchCommandHandler implements ClientCommandHandler {
     private final MatchingService matchingService;
     private final List<GameClientHandler> sessionList;
 
+    private final GameDAO gameDAO = new GameDAO();
+    private final UserDAO userDAO = new UserDAO();
+
     public MatchCommandHandler(MatchingService matchingService, List<GameClientHandler> sessionList) {
         this.matchingService = matchingService;
         this.sessionList = sessionList;
@@ -24,11 +29,11 @@ public class MatchCommandHandler implements ClientCommandHandler {
 
     @Override
     public void handle(String[] parts, GameClientHandler session) {
-    	 // 1) 이번에 매칭 요청한 유저를 대기열에 넣고
+        // 1) 매칭 요청 유저를 대기열에 넣고
         User user = session.getCurrentUser();
         matchingService.enqueue(user);
 
-        // 2) 매칭 시도 (인자 없는 match() 사용)
+        // 2) 매칭 시도
         GameRoom room = matchingService.match();
 
         // 3) 아직 짝이 안 맞으면 대기 메시지
@@ -78,13 +83,43 @@ public class MatchCommandHandler implements ClientCommandHandler {
             return;
         }
 
-        // 2) GameSession + GameSessionInstance 생성
-        GameSession session = new GameSession(p1.getUserId(), p2.getUserId());
-        GameSessionInstance instance = new GameSessionInstance(10, 10, session); // maxX,maxY는 적당히
+        // 2) UserDAO로 username → user_id 조회
+        int p1Id;
+        int p2Id;
+        int sessionId;
 
-        // 3) 인스턴스에 핸들러 등록
+        try {
+            User u1Entity = userDAO.getUserByUsername(u1);
+            User u2Entity = userDAO.getUserByUsername(u2);
+
+            if (u1Entity == null || u2Entity == null) {
+                logger.warning("[MATCH FOUND] user not found in DB for " + u1 + " / " + u2);
+                return;
+            }
+
+            p1Id = u1Entity.getUserId();
+            p2Id = u2Entity.getUserId();
+
+            // 3) GameDAO로 game_sessions 생성 (FK 맞는 user_id 사용)
+            sessionId = gameDAO.createGameSession(p1Id, p2Id);
+            if (sessionId <= 0) {
+                logger.warning("[MATCH FOUND] failed to create game session in DB");
+                return;
+            }
+
+        } catch (SQLException e) {
+            logger.warning("[MATCH FOUND] DB error: " + e.getMessage());
+            e.printStackTrace();
+            return;
+        }
+
+        // 4) GameSession + GameSessionInstance 생성
+        GameSession session = new GameSession(p1Id, p2Id);
+        session.setSessionId(sessionId);   // GameSession에 setter 있어야 함
+
+        GameSessionInstance instance = new GameSessionInstance(10, 10, session);
         instance.setPlayerHandlers(p1Handler, p2Handler);
 
-        logger.info("[MATCH FOUND] GameSessionInstance created");
+        logger.info("[MATCH FOUND] GameSessionInstance created, sessionId=" + sessionId);
     }
 }

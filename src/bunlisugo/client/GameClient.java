@@ -4,11 +4,14 @@ import java.io.PrintWriter;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 import bunlisugo.client.model.User;
 import bunlisugo.client.view.HomeView;
 import bunlisugo.client.view.LoginView;
 import bunlisugo.client.view.MatchingView;
+import bunlisugo.client.view.RankingView;
 
 public class GameClient {
 
@@ -18,12 +21,14 @@ public class GameClient {
     private BufferedReader in;
     private User currentUser;
     private int lastScore = 0;
+    public static final int RANKING_LIMIT = 10;
     
     // 화면 참조
     private LoginView loginView;
     private HomeView homeView;
     private MatchingView matchingView;
-    
+    private RankingView rankingView;
+
     public void setLoginView(LoginView loginView) {
         this.loginView = loginView;
     }
@@ -34,6 +39,10 @@ public class GameClient {
     
     public void setMatchingView(MatchingView matchingView) {  
         this.matchingView = matchingView;
+    }
+
+    public void setRankingView(RankingView rankingView) {
+        this.rankingView = rankingView;
     }
 
     public User getCurrentUser(){
@@ -55,7 +64,6 @@ public class GameClient {
         return null;
     }
 
-
     private GameClient() {
         try {
             socket = new Socket("192.168.219.105", 3328); //서버 컴퓨터의 
@@ -64,7 +72,7 @@ public class GameClient {
             out = new PrintWriter(socket.getOutputStream(), true);
             in  = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-            // 서버 메시지를 "계속" 읽는 수신 스레드
+            // 서버 메시지를 "계속" 읽는 수신 스레드 (이 람다는 괜찮다고 했으니 그대로 둠)
             new Thread(() -> {
                 try {
                     String resp;
@@ -94,6 +102,8 @@ public class GameClient {
         if (out != null) {
             out.println(message);
             out.flush();
+        } else {
+            System.out.println("WARN: tried to send but output stream is null. msg=" + message);
         }
     }
     
@@ -118,13 +128,20 @@ public class GameClient {
                     loginView.onLoginFail(reason);
                 }
                 break;
+
             case "MATCH_WAITING":
-                int waiting = Integer.parseInt(parts[1]);
-                matchingView.onMatchWaiting(waiting);
+                if (parts.length > 1) {
+                    int waiting = Integer.parseInt(parts[1]);
+                    if (matchingView != null) {
+                        matchingView.onMatchWaiting(waiting);
+                    }
+                }
                 break;
 
             case "MATCH_FOUND":
-                matchingView.onMatchFound();
+                if (matchingView != null) {
+                    matchingView.onMatchFound();
+                }
                 break;
            
             case "RESULT":
@@ -146,9 +163,14 @@ public class GameClient {
                     System.out.println("Invalid score format in RESULT");
                     break;
                 }
+                
+                String myName = getNickname();
+                if (myName == null) {
+                    System.out.println("WARN: RESULT received but currentUser is null");
+                    break;
+                }
 
                 // 내가 P1인지 P2인지 판단
-                String myName = getNickname();
                 boolean iAmP1 = myName.equals(p1Name);
 
                 int myScore    = iAmP1 ? p1Score : p2Score;
@@ -166,14 +188,40 @@ public class GameClient {
                     resultText = "DRAW!";
                 }
 
-                javax.swing.SwingUtilities.invokeLater(() -> {
-                    new bunlisugo.client.view.ResultView(this, resultText, myScore, otherScore);
+                javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        new bunlisugo.client.view.ResultView(
+                            GameClient.this,
+                            resultText,
+                            myScore,
+                            otherScore
+                        );
+                    }
                 });
 
                 break;
+                
+            case "RANKING_RES":
+                List<String> items = new ArrayList<String>();
 
-        
+                for (int i = 1; i < parts.length; i++) {
+                    items.add(parts[i]); // username,score
+                }
+
+                if (rankingView != null) {
+                    javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            rankingView.updateRanking(items);
+                        }
+                    });
+                }
+                break;
+
+            default:
+                System.out.println("Unknown command from server: " + cmd);
+                break;
         }
     }
-
 }

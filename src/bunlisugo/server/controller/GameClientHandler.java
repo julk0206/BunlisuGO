@@ -14,6 +14,7 @@ import bunlisugo.server.entity.User;
 import bunlisugo.server.service.GameSessionInstance;
 import bunlisugo.server.service.LoginService;
 import bunlisugo.server.service.MatchingService;
+import bunlisugo.server.service.RankingService;
 import bunlisugo.server.service.ResultService;
 import bunlisugo.server.service.SignupService;
 
@@ -25,6 +26,7 @@ public class GameClientHandler extends Thread {
     private final SignupService signupService = new SignupService();
     private static final MatchingService matchingService = new MatchingService();
     private static final ResultService resultService = new ResultService(); 
+    private static final RankingService rankingService = new RankingService();
     private GameSessionInstance gameSessionInstance;
     
     // 서버에 붙어 있는 모든 클라이언트 핸들러 목록
@@ -51,6 +53,7 @@ public class GameClientHandler extends Thread {
         commandHandlers.put("SIGNUP", new SignCommandHandler(signupService));
         commandHandlers.put("MATCH",  new MatchCommandHandler(matchingService, handlers));
         commandHandlers.put("GAME_RESULT", new ResultCommandHandler(resultService));
+        commandHandlers.put("RANKING_REQ", new RankingCommandHandler(rankingService));
     }
 
     @Override

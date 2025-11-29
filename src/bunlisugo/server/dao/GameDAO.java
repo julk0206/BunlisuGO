@@ -1,14 +1,18 @@
 package bunlisugo.server.dao;
 
-import java.util.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.List;
 
 import bunlisugo.server.entity.GameResult;
 import bunlisugo.server.entity.GameSession;
 import bunlisugo.server.entity.Ranking;
-import bunlisugo.server.dao.DBManager;
-
-
-import java.sql.*;
 
 
 public class GameDAO {
@@ -147,10 +151,10 @@ public class GameDAO {
     // 랭킹 점수 업데이트
     public boolean updateRankingScore(int userId, int rankingScore) throws SQLException {
 
-        String sql = "UPDATE users SET rankingScore = rankingScore + ? WHERE user_id = ?";
+        String sql = "UPDATE users SET ranking_score = ranking_score + ? WHERE user_id = ?";
 
         try (Connection conn = DBManager.getConnection();
-        PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, rankingScore);
             pstmt.setInt(2, userId);
@@ -160,21 +164,22 @@ public class GameDAO {
     }
 
 
-    // 랭킹 리스트 조회
+
+ // 랭킹 리스트 조회
     public List<Ranking> getRankingList(int limit) throws SQLException {
 
-        
         String sql = "SELECT u.user_id, u.username, SUM(g.score) AS total_score " +
-                 "FROM game_results g " +
-                 "JOIN user u ON g.player_id = u.user_id " +
-                 "GROUP BY u.user_id, u.username " +
-                 "ORDER BY total_score DESC " +
-                 "LIMIT ?";
+                     "FROM game_results g " +
+                     "JOIN users u ON g.player_id = u.user_id " +
+                     "GROUP BY u.user_id, u.username " +
+                     "ORDER BY total_score DESC " +
+                     "LIMIT ?";
 
         List<Ranking> list = new ArrayList<>();
 
         try (Connection conn = DBManager.getConnection();
-        PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
             pstmt.setInt(1, limit);
 
             try (ResultSet rs = pstmt.executeQuery()) {
@@ -189,10 +194,11 @@ public class GameDAO {
 
             } catch (Exception e) {
                 e.printStackTrace();
-                return null;
+                return null; // 여기 null은 RankingService에서 emptyList로 정리됨
             }
         }
         return list;
     }
+
 
 }

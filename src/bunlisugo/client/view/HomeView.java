@@ -1,7 +1,6 @@
 package bunlisugo.client.view;
 
 import java.awt.Font;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -35,18 +34,15 @@ public class HomeView {
     private void initialize() {
         frame.getContentPane().setLayout(null);
 
-        // 닉네임 라벨 (나중에 client에서 닉네임 받아서 setText 하면 됨)
         JLabel nickNameLabel = new JLabel("닉네임");
         nickNameLabel.setBounds(38, 35, 187, 68);
         frame.getContentPane().add(nickNameLabel);
 		
-        // 게임 제목
         JLabel titleLabel = new JLabel("분리수GO");
         titleLabel.setFont(new Font("Serif", Font.BOLD, 50));
         titleLabel.setBounds(624, 230, 348, 208);
         frame.getContentPane().add(titleLabel);
 
-        // 게임 로고 이미지
         JLabel logoImageLabel = new JLabel();
         ImageIcon logoImage = null;
 
@@ -61,7 +57,6 @@ public class HomeView {
         logoImageLabel.setBounds(266, 230, 348, 208);
         frame.getContentPane().add(logoImageLabel);
 
-        // 게임 시작 버튼
         JButton startButton = new JButton("게임 시작");
         startButton.addActionListener(new ActionListener() {
             @Override
@@ -72,12 +67,9 @@ public class HomeView {
                 TrashBoxPanel trashBox = new TrashBoxPanel();
                 GameController gameController = new GameController();
 
-                // GameController에 화면 요소 연결
                 gameController.setTimePanel(timePanel);
                 gameController.setTrashBoxPanel(trashBox);
 
-                // 매칭 화면으로 이동
-                // (여기서 MatchingView 쪽에서 gameController.setClient(client) 해주면 됨)
                 new MatchingView(client, timePanel, gameController, trashBox);
             }
         });
@@ -85,16 +77,14 @@ public class HomeView {
         frame.getContentPane().add(startButton);
 		
         // 랭킹 화면 이동 버튼
-        JButton goRankingViewButton = new JButton("현재 랭킹 2위");
+        JButton goRankingViewButton = new JButton("랭킹 보기");
         goRankingViewButton.setBounds(956, 35, 187, 68);
         goRankingViewButton.addActionListener(e -> {
             frame.dispose();
 
-   
-            String username = client.getNickname();   // 예: "yeeun"
-            int lastScore   = client.getLastScore();  // 예: 방금 게임 끝난 최종 점수
+            String username = client.getNickname();   // ex) "yeeun"
+            int lastScore   = client.getLastScore();  // 아직 게임 안 했으면 0일 수도 있음
 
-            // 우리가 앞에서 설계한 형태: RankingView(GameClient, String, int)
             new RankingView(client, username, lastScore);
         });
         frame.getContentPane().add(goRankingViewButton);

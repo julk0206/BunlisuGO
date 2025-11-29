@@ -92,6 +92,13 @@ public class UserDAO {
     
         } 
     
+    public Integer getUserIdByUsername(String username) throws SQLException {
+        User user = getUserByUsername(username);
+        if (user == null) {
+            return null;
+        }
+        return user.getUserId();
+    }
 
 
     // 랭킹 조회
