@@ -20,7 +20,8 @@ public class HomeView {
     private final GameClient client;
     
     public HomeView(GameClient client) {
-        this.client = GameClient.getInstance();
+        // 넘겨받은 client를 그대로 사용 (getInstance()로 다시 안 받기)
+        this.client = client;
         this.client.setHomeView(this);   // GameClient에 홈뷰 등록
 
         frame = new JFrame("Home View");
@@ -48,12 +49,10 @@ public class HomeView {
         // 게임 로고 이미지
         JLabel logoImageLabel = new JLabel();
         ImageIcon logoImage = null;
-        //Image scaled = null;
 
         java.net.URL imgUrl = getClass().getResource("/images/logo.png");
         if (imgUrl != null) {
             logoImage = new ImageIcon(imgUrl);
-            //scaled = logoImage.getImage().getScaledInstance(logoImageLabel.getWidth(),logoImageLabel.getHeight(),Image.SCALE_SMOOTH);
         } else {
             System.out.println("이미지 파일을 찾을 수 없습니다: /images/logo.png");
         }
@@ -69,16 +68,16 @@ public class HomeView {
             public void actionPerformed(ActionEvent e) {
                 frame.dispose();
 
-                // 🔥 게임에 필요한 세 요소 생성
                 TimePanel timePanel = new TimePanel();
                 TrashBoxPanel trashBox = new TrashBoxPanel();
                 GameController gameController = new GameController();
 
                 // GameController에 화면 요소 연결
                 gameController.setTimePanel(timePanel);
-                gameController.setTrashBoxPanel(trashBox); // ⬅ 이 메서드는 GameController에 추가해줘야 함
+                gameController.setTrashBoxPanel(trashBox);
 
-                // 매칭 화면으로 이동 (MatchingView는 이 4개를 받는 생성자가 있어야 함)
+                // 매칭 화면으로 이동
+                // (여기서 MatchingView 쪽에서 gameController.setClient(client) 해주면 됨)
                 new MatchingView(client, timePanel, gameController, trashBox);
             }
         });
@@ -90,7 +89,13 @@ public class HomeView {
         goRankingViewButton.setBounds(956, 35, 187, 68);
         goRankingViewButton.addActionListener(e -> {
             frame.dispose();
-            new RankingView();   // 지금 RankingView는 GameClient 안 넘기고 있음
+
+   
+            String username = client.getNickname();   // 예: "yeeun"
+            int lastScore   = client.getLastScore();  // 예: 방금 게임 끝난 최종 점수
+
+            // 우리가 앞에서 설계한 형태: RankingView(GameClient, String, int)
+            new RankingView(client, username, lastScore);
         });
         frame.getContentPane().add(goRankingViewButton);
     }

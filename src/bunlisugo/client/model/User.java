@@ -3,8 +3,6 @@ package bunlisugo.client.model;
 
 import java.time.LocalDateTime;
 
-import bunlisugo.client.GameClient;
-
 public class User {
     private int userId;
     private String username;

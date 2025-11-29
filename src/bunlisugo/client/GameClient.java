@@ -17,6 +17,7 @@ public class GameClient {
     private PrintWriter out;
     private BufferedReader in;
     private User currentUser;
+    private int lastScore = 0;
     
     // 화면 참조
     private LoginView loginView;
@@ -38,6 +39,22 @@ public class GameClient {
     public User getCurrentUser(){
         return currentUser;
     }
+    
+    public int getLastScore() {
+        return lastScore;
+    }
+
+    public void setLastScore(int score) {
+        this.lastScore = score;
+    }
+    
+    public String getNickname() {
+        if (currentUser != null) {
+            return currentUser.getUsername();
+        }
+        return null;
+    }
+
 
     private GameClient() {
         try {
@@ -53,7 +70,7 @@ public class GameClient {
                     String resp;
                     while ((resp = in.readLine()) != null) {
                         System.out.println("RECV: " + resp);
-                        handleServerMessage(resp);   // ⭐ 여기 이름 수정!
+                        handleServerMessage(resp);  
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -109,13 +126,54 @@ public class GameClient {
             case "MATCH_FOUND":
                 matchingView.onMatchFound();
                 break;
+           
+            case "RESULT":
+                if (parts.length < 5) {
+                    System.out.println("Invalid RESULT packet");
+                    break;
+                }
+
+                String p1Name = parts[1];
+                String p2Name = parts[3];
+
+                int p1Score;
+                int p2Score;
+
+                try {
+                    p1Score = Integer.parseInt(parts[2]);
+                    p2Score = Integer.parseInt(parts[4]);
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid score format in RESULT");
+                    break;
+                }
+
+                // 내가 P1인지 P2인지 판단
+                String myName = getNickname();
+                boolean iAmP1 = myName.equals(p1Name);
+
+                int myScore    = iAmP1 ? p1Score : p2Score;
+                int otherScore = iAmP1 ? p2Score : p1Score;
+
+                setLastScore(myScore);  // 홈/랭킹에서 사용
+
+                // 승패 텍스트
+                String resultText;
+                if (myScore > otherScore) {
+                    resultText = "You WIN!";
+                } else if (myScore < otherScore) {
+                    resultText = "You LOSE!";
+                } else {
+                    resultText = "DRAW!";
+                }
+
+                javax.swing.SwingUtilities.invokeLater(() -> {
+                    new bunlisugo.client.view.ResultView(this, resultText, myScore, otherScore);
+                });
+
+                break;
 
         
         }
     }
 
-    // 테스트용 main (안 써도 됨)
-    public static void main(String[] args) {
-        GameClient client = GameClient.getInstance();
-    }
 }

@@ -1,8 +1,8 @@
 package bunlisugo.server.service;
 
 import java.sql.SQLException;
-import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import bunlisugo.server.dao.GameDAO;
 import bunlisugo.server.dao.TrashTypeDAO;
@@ -87,11 +87,13 @@ public class GameService {
         instance.getTrashManager().generateTrash(types);
     }
 
-    // 쓰레기 수집 처리
+ // 쓰레기 수집 처리
     public boolean collectTrash(int playerId, String trashName) {
         boolean collected = instance.getTrashManager().collectTrash(playerId, trashName);
         if (collected) {
-            instance.getScoreManager().addScore(playerId, 5);
+            // playerId 가 player1 인지 player2 인지 판별해서 ScoreManager 에 반영
+            boolean isPlayer1 = (playerId == session.getPlayer1Id());
+            instance.getScoreManager().addScore(isPlayer1, 5);
         }
         return collected;
     }
@@ -100,9 +102,10 @@ public class GameService {
         return instance.getTrashManager().getActiveTrashes();
     }
 
-    //플레이어별 점수 (주기적 호출 필요)
+  //플레이어별 점수 (주기적 호출 필요)
     public int getScore(int playerId) {
-        return instance.getScoreManager().getScore(playerId);
+        boolean isPlayer1 = (playerId == session.getPlayer1Id());
+        return instance.getScoreManager().getScore(isPlayer1);
     }
 
     //남은 시간 (주기적 호출 필요)
@@ -113,15 +116,18 @@ public class GameService {
     // 승자 결정
     public Integer determineWinner() {
 
-        int player1Score = instance.getScoreManager().getScore(session.getPlayer1Id());
-        int player2Score = instance.getScoreManager().getScore(session.getPlayer2Id());
+        int player1Score = instance.getScoreManager().getScore(true);   // 1번 슬롯
+        int player2Score = instance.getScoreManager().getScore(false);  // 2번 슬롯
+
+        int player1Id = session.getPlayer1Id(); // DB userId
+        int player2Id = session.getPlayer2Id();
 
         if (player1Score > player2Score) {
-            session.setWinnerId(session.getPlayer1Id());
-            return session.getPlayer1Id();
+            session.setWinnerId(player1Id);
+            return player1Id;
         } else if (player2Score > player1Score) {
-            session.setWinnerId(session.getPlayer2Id());
-            return session.getPlayer2Id();
+            session.setWinnerId(player2Id);
+            return player2Id;
         } else {
             session.setWinnerId(null); // 무승부
             return null;
@@ -131,10 +137,15 @@ public class GameService {
     // 게임 결과 조회
     public List<GameResult> getGameResults() {
         List<GameResult> results = new ArrayList<>();
-        results.add(new GameResult(session.getSessionId(), session.getPlayer1Id(), 
-                                    instance.getScoreManager().getScore(session.getPlayer1Id())));
-        results.add(new GameResult(session.getSessionId(), session.getPlayer2Id(), 
-                                    instance.getScoreManager().getScore(session.getPlayer2Id())));
+
+        int player1Id = session.getPlayer1Id();
+        int player2Id = session.getPlayer2Id();
+
+        int player1Score = instance.getScoreManager().getScore(true);
+        int player2Score = instance.getScoreManager().getScore(false);
+
+        results.add(new GameResult(session.getSessionId(), player1Id, player1Score));
+        results.add(new GameResult(session.getSessionId(), player2Id, player2Score));
         return results;
     }
     

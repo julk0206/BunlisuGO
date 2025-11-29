@@ -1,3 +1,4 @@
+
 package bunlisugo.client.controller;
 
 import java.awt.Rectangle;
@@ -66,6 +67,7 @@ public class GameController {
     public void startGame() {
         gameEnded = false;       // 새 게임이니까 초기화
         spawnedCount = 0;
+        score = 0;
 
         if (timePanel != null) {
             timePanel.startTimer(60); // 60초 게임
@@ -267,7 +269,7 @@ public class GameController {
         // 아무 박스에도 안 떨어졌으면 그냥 놔두기
     }
 
-    // 게임 오버
+ // 게임 오버
     public void gameOver() {
         if (gameEnded) return;  // 중복 호출 방지
         gameEnded = true;
@@ -282,9 +284,19 @@ public class GameController {
         }
 
         if (client != null) {
-            client.send("GAME_RESULT|" + score);
+            client.setLastScore(score);          // GameClient에 최종 점수 저장
+            client.send("GAME_RESULT|" + score); // 서버로 전송
         }
 
         System.out.println("게임 종료! 최종 점수 = " + score);
+
+        // 여기서는 GameView만 닫고 끝낸다. ResultView는 절대 띄우지 않는다.
+        SwingUtilities.invokeLater(() -> {
+            if (frame != null) {
+                frame.dispose();
+            }
+        });
     }
+
+
 }

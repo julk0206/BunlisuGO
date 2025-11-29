@@ -1,37 +1,32 @@
+// bunlisugo.server.service.ScoreManager.java
 package bunlisugo.server.service;
-
-import bunlisugo.server.entity.GameSession;
 
 public class ScoreManager {
 
-    private final GameSession session;
+    // 플레이어1 / 플레이어2 점수
+    private int player1Score = 0;
+    private int player2Score = 0;
 
-    public ScoreManager(GameSession session) {
-        this.session = session;
+    // 점수 조회
+    public int getPlayer1Score() {
+        return player1Score;
     }
 
-    // 플레이어 점수 초기값 설정
-    private int player1Score = 0;
-    private int player2Score =0;
+    public int getPlayer2Score() {
+        return player2Score;
+    }
 
-    // 플레이어별 점수 조회
-    public int getScore(int playerId) {
-        if (playerId == session.getPlayer1Id()) {
-            return player1Score;
-        } else if (playerId == session.getPlayer2Id()) {
-            return player2Score;
-        } else {
-            return 0; 
-        }
+    // 특정 플레이어(1번/2번)의 점수 조회가 필요하면:
+    public int getScore(boolean isPlayer1) {
+        return isPlayer1 ? player1Score : player2Score;
     }
 
     // 점수 업데이트
-    public void addScore(int playerId, int score) {
-        if (playerId == session.getPlayer1Id()) {
+    public void addScore(boolean isPlayer1, int score) {
+        if (isPlayer1) {
             player1Score += score;
-        } else if (playerId == session.getPlayer2Id()) {
+        } else {
             player2Score += score;
         }
     }
-    
 }

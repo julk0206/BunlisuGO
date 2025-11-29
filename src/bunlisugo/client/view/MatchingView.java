@@ -35,6 +35,7 @@ public class MatchingView {
 
         // GameClient에 자기 자신 등록 (MATCH_* 이벤트 받을 수 있게)
         this.client.setMatchingView(this);
+        this.gameController.setClient(client); 
 
         frame = new JFrame("Matching View");
         frame.setBounds(100, 100, 1200, 750);
