@@ -6,6 +6,7 @@ import javax.swing.JLabel;
 
 import bunlisugo.client.GameClient;
 import bunlisugo.client.controller.GameController;
+import bunlisugo.client.model.GameState;
 import bunlisugo.client.view.game.GameScorePanel;
 import bunlisugo.client.view.game.GameView;
 import bunlisugo.client.view.game.TimePanel;
@@ -35,7 +36,6 @@ public class MatchingView {
 
         // GameClient에 자기 자신 등록 (MATCH_* 이벤트 받을 수 있게)
         this.client.setMatchingView(this);
-        this.gameController.setClient(client); 
 
         frame = new JFrame("Matching View");
         frame.setBounds(100, 100, 1200, 750);
@@ -43,14 +43,6 @@ public class MatchingView {
 
         initialize();
         frame.setVisible(true);
-    }
-
-    // 필요하면 기존 no-arg 생성자도 살려서 ResultView 같은 데서 사용:
-    public MatchingView() {
-        this(GameClient.getInstance(),
-             new TimePanel(),
-             new GameController(),
-             new TrashBoxPanel());
     }
 
     private void initialize() {
@@ -91,9 +83,23 @@ public class MatchingView {
         waitingPlayerLabel.setText("대기 중인 플레이어: " + waitingCount + "명");
     }
 
-    public void onMatchFound() {
+    public void onMatchFound(String opponentName) {
         frame.dispose();
-        GameScorePanel gamescorePanel = new GameScorePanel(); //근데 이거를 여기에 넣어야 되나..?
+
+        // GameState 초기화
+        String myName = client.getCurrentUser().getUsername();
+        GameState gameState = new GameState(myName, opponentName);
+
+        // GameController와 GameClient 둘 다 동일한 GameState를 공유하도록
+        gameController.setGameState(gameState);
+        client.setGameState(gameState);
+
+        // 점수판 생성 + 연결
+        GameScorePanel gamescorePanel = new GameScorePanel(gameState);
+        gameController.setGameScorePanel(gamescorePanel);
+        client.setGameScorePanel(gamescorePanel);
+
+        // 실제 게임 화면으로 이동
         new GameView(timePanel, gameController, trashBox, gamescorePanel);
     }
 }

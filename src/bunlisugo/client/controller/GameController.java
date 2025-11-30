@@ -1,51 +1,77 @@
-
 package bunlisugo.client.controller;
 
-import java.awt.Rectangle;
 import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 import bunlisugo.client.GameClient;
+import bunlisugo.client.model.GameState;
 import bunlisugo.client.model.TrashType;
+import bunlisugo.client.view.ResultView;
+import bunlisugo.client.view.game.GameScorePanel;
 import bunlisugo.client.view.game.TimePanel;
 import bunlisugo.client.view.game.TrashBoxPanel;
 
 public class GameController {
 
-    private TimePanel timePanel;
     private TrashBoxPanel trashBoxPanel;
-    private JFrame frame;
+    private JFrame gameFrame;        
 
-    // 1.5초 간격 쓰레기 스폰용 타이머
+    // 필요하면 쓸 스폰 타이머
     private Timer spawnTimer;
-    private final int spawnIntervalMs = 1500;   // 1.5초
-    private final int maxTrashCount   = 40;     // 60초 동안 1.5초마다 → 40개
-    private int spawnedCount = 0;
 
     // 점수
     private int score = 0;
     private final int correct_score = 5;
     private final int wrong_score   = 2;
 
-    private Random random = new Random();
-    private List<JButton> trashButtons = new ArrayList<JButton>();
+    private List<JButton> trashButtons = new ArrayList<>();
     private GameClient client;
+
+    private GameScorePanel gameScorePanel;
+    private GameState gameState;
 
     // 게임이 이미 끝났는지 여부(중복 종료 방지)
     private boolean gameEnded = false;
+
+    // 결과 화면을 이미 띄웠는지 여부
+    private boolean resultShown = false;
+
+    // 외부에서 주입받을 playerId (로그인한 유저 이름)
+    private String playerId;
+    private TimePanel timePanel;
+
+    public GameController() {}
+
+    // client만 넘길 때
+    public GameController(GameClient client) {
+        this.client = client;
+        if (client != null && client.getCurrentUser() != null) {
+            this.playerId = client.getCurrentUser().getUsername();
+        }
+    }
+    
+    public GameController(GameClient client, String playerId) {
+        this.client = client;
+        this.playerId = playerId;
+    }
+
+
+    // client + gameFrame 까지 한 번에 넘기는 생성자
+    public GameController(GameClient client, JFrame gameFrame) {
+        this(client);
+        this.gameFrame = gameFrame;
+    }
 
     public void setTimePanel(TimePanel timePanel) {
         this.timePanel = timePanel;
@@ -55,41 +81,45 @@ public class GameController {
         this.trashBoxPanel = trashBoxPanel;
     }
 
-    public void setFrame(JFrame frame) {
-        this.frame = frame;
+    public void setGameFrame(JFrame frame) {
+        this.gameFrame = frame;
     }
 
     public void setClient(GameClient client) {
         this.client = client;
     }
 
-    // 게임 시작할 때 GameView에서 호출
-    public void startGame() {
-        gameEnded = false;       // 새 게임이니까 초기화
-        spawnedCount = 0;
-        score = 0;
-
-        if (timePanel != null) {
-            timePanel.startTimer(60); // 60초 게임
-        }
-
-        spawnTimer = new Timer(spawnIntervalMs, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (spawnedCount >= maxTrashCount) {
-                    spawnTimer.stop();
-                    return;
-                }
-
-                spawnRandomTrash();
-                spawnedCount++;
-            }
-        });
-
-        spawnTimer.start();
+    public void setGameScorePanel(GameScorePanel panel) {
+        this.gameScorePanel = panel;
     }
 
-    // 60초 끝나면 TimePanel에서 호출
+    public void setPlayerId(String playerId) {
+        this.playerId = playerId;
+    }
+
+    public void setGameState(GameState state) {
+        this.gameState = state;
+    }
+
+    public void startGame() {
+        gameEnded = false;
+        resultShown = false;
+        score = 0;  // 내 점수 리셋
+
+        // 모델도 같이 리셋
+        if (gameState != null) {
+            gameState.setMyScore(0);
+            gameState.setOpponentScore(0);
+        }
+
+        // 화면 점수판도 리셋
+        if (gameScorePanel != null) {
+            gameScorePanel.updateMyScore(0);
+            gameScorePanel.updateOpponentScore(0);
+        }
+    }
+
+    // 60초 끝나면 GameClient에서 TIME_UPDATE=0을 받고 여기 onTimeOver 호출
     public void onTimeOver() {
         if (gameEnded) return; // 이미 끝났으면 무시
 
@@ -100,58 +130,19 @@ public class GameController {
         gameOver();
     }
 
-    // --- 이미지 경로 선택 ---
-    private String getRandomImagePath(TrashType type) {
-        String[] candidates = null;
+    // 서버에서 온 쓰레기 하나를 화면에 추가
+    public void spawnTrash(String name, String category, String imagePath, int x, int y) {
+        if (gameFrame == null || trashBoxPanel == null || gameEnded) return;
 
-        switch (type) {
-            case PLASTIC -> {
-                candidates = new String[] {
-                    "/images/trash/plastic/delivery_clean.png",
-                    "/images/trash/plastic/PlasticBottle.png",
-                    "/images/trash/plastic/PlasticCup.png"
-                };
-            }
-            case GLASSCAN -> {
-                candidates = new String[] {
-                    "/images/trash/glasscan/aluminumcan.png",
-                    "/images/trash/glasscan/beer.png",
-                    "/images/trash/glasscan/soju.png"
-                };
-            }
-            case PAPER -> {
-                candidates = new String[] {
-                    "/images/trash/paper/newspaper.png",
-                    "/images/trash/paper/postit.png"
-                };
-            }
-            case GENERAL -> {
-                candidates = new String[] {
-                    "/images/trash/general/brokenglass.png",
-                    "/images/trash/general/ceramic.png",
-                    "/images/trash/general/delivery_dirty.png",
-                    "/images/trash/general/fruitnet.png",
-                    "/images/trash/general/receipt.png",
-                    "/images/trash/general/toothpaste.png"
-                };
-            }
+        // 쓰레기통 위에 겹치지 않게 Y 최소값 제한 (필요하면 수치 조정)
+        int minY = 250;
+        if (y < minY) {
+            y = minY;
         }
 
-        return candidates[random.nextInt(candidates.length)];
-    }
+        TrashType type = TrashType.valueOf(category.toUpperCase()); // 서버에서 보내준 category 활용
 
-    // 쓰레기 하나 랜덤으로 생성해서 프레임에 추가
-    private void spawnRandomTrash() {
-        if (frame == null || trashBoxPanel == null || gameEnded) return;
-
-        // 랜덤 타입
-        TrashType[] types = TrashType.values();
-        TrashType type = types[random.nextInt(types.length)];
-
-        // 아이콘 경로
-        String imagePath = getRandomImagePath(type);
-
-        java.net.URL imgUrl = getClass().getResource(imagePath);
+        java.net.URL imgUrl = getClass().getResource("/" + imagePath);
         if (imgUrl == null) {
             System.out.println("이미지 못 찾음: " + imagePath);
             return;
@@ -169,20 +160,14 @@ public class GameController {
         trashBtn.setBorderPainted(false);
         trashBtn.setContentAreaFilled(false);
 
-        // 프레임 안에서 랜덤 위치 (윗부분)
-        int maxX = frame.getWidth() - width - 50;
-        int maxY = 300; // 쓰레기통 위쪽까지만
-        int x = 50 + random.nextInt(Math.max(maxX, 50));
-        int y = 100 + random.nextInt(Math.max(maxY, 50));
-
         trashBtn.setBounds(x, y, width, height);
 
         // 드래그 & 드롭
         addDragAndDrop(trashBtn, type);
 
         trashButtons.add(trashBtn);
-        frame.getContentPane().add(trashBtn);
-        frame.repaint();
+        gameFrame.getContentPane().add(trashBtn);
+        gameFrame.repaint();
     }
 
     // 드래그해서 놓았을 때 점수 판정
@@ -220,7 +205,7 @@ public class GameController {
 
     // 어떤 통 위에 놓였는지 + 타입 맞는지 체크
     private void checkDrop(JButton btn, TrashType type) {
-        if (gameEnded) return;  // ★ 게임 끝났으면 판정 안 함
+        if (gameEnded) return;  // 게임 끝났으면 판정 안 함
 
         JPanel[] boxes = trashBoxPanel.getBoxes();
         if (boxes == null) return;
@@ -253,23 +238,38 @@ public class GameController {
                     ", 현재 점수=" + score
                 );
 
+                if (gameState != null) {
+                    gameState.setMyScore(score);
+                }
+
+                // 외부 주입된 playerId 사용 (없으면 client에서 한 번 더 가져오기)
+                String pid = playerId;
+                if (pid == null && client != null && client.getCurrentUser() != null) {
+                    pid = client.getCurrentUser().getUsername();
+                }
+
+                if (client != null && pid != null) {
+                    client.send("SCORE|" + pid + "|" + score);
+                }
+
+                if (gameScorePanel != null) {
+                    gameScorePanel.updateMyScore(score);
+                }
+
                 btn.setVisible(false);
                 trashButtons.remove(btn);
-                frame.getContentPane().remove(btn);
-                frame.repaint();
-
-                // 더 이상 쓰레기가 없고, 스폰도 안 돌고 있으면 종료
-                if (trashButtons.isEmpty() &&
-                    (spawnTimer == null || !spawnTimer.isRunning())) {
-                    gameOver();
+                if (gameFrame != null) {
+                    gameFrame.getContentPane().remove(btn);
+                    gameFrame.repaint();
                 }
+
                 return;
             }
         }
         // 아무 박스에도 안 떨어졌으면 그냥 놔두기
     }
 
- // 게임 오버
+    // 게임 오버
     public void gameOver() {
         if (gameEnded) return;  // 중복 호출 방지
         gameEnded = true;
@@ -279,24 +279,50 @@ public class GameController {
         }
 
         // 남아있는 쓰레기 버튼 전부 비활성화
-        for (JButton btn : new ArrayList<JButton>(trashButtons)) {
+        for (JButton btn : new ArrayList<>(trashButtons)) {
             btn.setEnabled(false);
         }
 
         if (client != null) {
-            client.setLastScore(score);          // GameClient에 최종 점수 저장
-            client.send("GAME_RESULT|" + score); // 서버로 전송
+            // 서버 ResultCommandHandler와 맞춘 명령 이름
+            client.send("RESULT|" + score);
         }
 
         System.out.println("게임 종료! 최종 점수 = " + score);
-
-        // 여기서는 GameView만 닫고 끝낸다. ResultView는 절대 띄우지 않는다.
-        SwingUtilities.invokeLater(() -> {
-            if (frame != null) {
-                frame.dispose();
-            }
-        });
     }
 
+    public void showResult(String winnerId) {
+        if (gameState == null) return;
+
+        String myName   = gameState.getMyName();
+        String oppName  = gameState.getOpponentName();
+        int myScore     = gameState.getMyScore();
+        int oppScore    = gameState.getOpponentScore();
+
+        String resultText;
+        if (winnerId == null || "null".equalsIgnoreCase(winnerId)) {
+            resultText = "DRAW!";
+        } else if (winnerId.equals(myName)) {
+            resultText = "YOU WIN!";
+        } else if (winnerId.equals(oppName)) {
+            resultText = "YOU LOSE!";
+        } else {
+            resultText = winnerId;
+        }
+
+        System.out.println("[showResult] winner=" + winnerId +
+                ", myName=" + myName +
+                ", oppName=" + oppName +
+                ", myScore=" + myScore +
+                ", oppScore=" + oppScore);
+
+        javax.swing.SwingUtilities.invokeLater(() -> {
+            // 게임 창 닫기
+            if (gameFrame != null) {
+                gameFrame.dispose();
+            }
+            new ResultView(client, resultText, myScore, oppScore);
+        });
+    }
 
 }

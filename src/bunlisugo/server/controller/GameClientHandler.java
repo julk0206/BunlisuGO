@@ -10,12 +10,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
+import bunlisugo.server.entity.GameRoom;
 import bunlisugo.server.entity.User;
-import bunlisugo.server.service.GameSessionInstance;
+import bunlisugo.server.entity.ScreenSize; 
+import bunlisugo.server.service.GameService;
 import bunlisugo.server.service.LoginService;
 import bunlisugo.server.service.MatchingService;
-import bunlisugo.server.service.RankingService;
-import bunlisugo.server.service.ResultService;
 import bunlisugo.server.service.SignupService;
 
 public class GameClientHandler extends Thread {
@@ -25,10 +25,17 @@ public class GameClientHandler extends Thread {
     private final LoginService loginService  = new LoginService();
     private final SignupService signupService = new SignupService();
     private static final MatchingService matchingService = new MatchingService();
-    private static final ResultService resultService = new ResultService(); 
-    private static final RankingService rankingService = new RankingService();
-    private GameSessionInstance gameSessionInstance;
+
+    // 기본 화면 크기 설정 (NPE 방지용)
+    private static final ScreenSize DEFAULT_SCREEN_SIZE = new ScreenSize();
+    static {
+        DEFAULT_SCREEN_SIZE.setMaxX(1200); // 클라이언트 화면 가로 크기
+        DEFAULT_SCREEN_SIZE.setMaxY(750);  // 클라이언트 화면 세로 크기
+    }
+
     
+    private GameService gameSerivce = new GameService(null, DEFAULT_SCREEN_SIZE, handlers);
+
     // 서버에 붙어 있는 모든 클라이언트 핸들러 목록
     static final List<GameClientHandler> handlers = new CopyOnWriteArrayList<>();
 
@@ -40,6 +47,7 @@ public class GameClientHandler extends Thread {
     private boolean loggedIn = false;
     private String playerId;
     private User currentUser;
+    private GameRoom currentRoom;
 
     // 명령별 핸들러 맵
     private final Map<String, ClientCommandHandler> commandHandlers = new HashMap<>();
@@ -51,9 +59,10 @@ public class GameClientHandler extends Thread {
         // 명령 핸들러 등록
         commandHandlers.put("LOGIN",  new LoginCommandHandler(loginService));
         commandHandlers.put("SIGNUP", new SignCommandHandler(signupService));
-        commandHandlers.put("MATCH",  new MatchCommandHandler(matchingService, handlers));
-        commandHandlers.put("GAME_RESULT", new ResultCommandHandler(resultService));
-        commandHandlers.put("RANKING_REQ", new RankingCommandHandler(rankingService));
+        commandHandlers.put("MATCH",  new MatchCommandHandler(matchingService, handlers, gameSerivce));
+        commandHandlers.put("SCORE",  new ScoreCommandHandler(gameSerivce, handlers));
+        commandHandlers.put("RANKING_REQ", new RankCommandHandler(gameSerivce));
+        commandHandlers.put("RESULT", new ResultCommandHandler(gameSerivce));
     }
 
     @Override
@@ -136,8 +145,12 @@ public class GameClientHandler extends Thread {
     public void setCurrentUser(User currentUser) {
         this.currentUser = currentUser;
     }
-    
-    public GameSessionInstance getGameSessionInstance() { 
-        return gameSessionInstance;
+
+    public GameRoom getCurrentRoom() {
+        return currentRoom;
+    }
+
+    public void setCurrentRoom(GameRoom room) {
+        this.currentRoom = room;
     }
 }

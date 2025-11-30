@@ -81,7 +81,7 @@ public class UserDAO {
                         rs.getString("password_hash"),
                         rs.getInt("ranking_score"),
                         rs.getTimestamp("created_at").toLocalDateTime()
-                    );
+                        );
                     }
                 } catch (SQLException e) {
                     e.printStackTrace();
@@ -92,13 +92,6 @@ public class UserDAO {
     
         } 
     
-    public Integer getUserIdByUsername(String username) throws SQLException {
-        User user = getUserByUsername(username);
-        if (user == null) {
-            return null;
-        }
-        return user.getUserId();
-    }
 
 
     // 랭킹 조회

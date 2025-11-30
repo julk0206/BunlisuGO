@@ -1,8 +1,6 @@
 package bunlisugo.client.view;
 
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -17,11 +15,11 @@ import bunlisugo.client.view.game.TrashBoxPanel;
 public class HomeView {
     private JFrame frame;
     private final GameClient client;
-    
+
     public HomeView(GameClient client) {
-        // 넘겨받은 client를 그대로 사용 (getInstance()로 다시 안 받기)
-        this.client = client;
-        this.client.setHomeView(this);   // GameClient에 홈뷰 등록
+        // 싱글톤 그대로 쓰는 구조 유지
+        this.client = GameClient.getInstance();
+        this.client.setHomeView(this);
 
         frame = new JFrame("Home View");
         frame.setBounds(100, 100, 1200, 750);
@@ -37,7 +35,7 @@ public class HomeView {
         JLabel nickNameLabel = new JLabel("닉네임");
         nickNameLabel.setBounds(38, 35, 187, 68);
         frame.getContentPane().add(nickNameLabel);
-		
+
         JLabel titleLabel = new JLabel("분리수GO");
         titleLabel.setFont(new Font("Serif", Font.BOLD, 50));
         titleLabel.setBounds(624, 230, 348, 208);
@@ -57,35 +55,41 @@ public class HomeView {
         logoImageLabel.setBounds(266, 230, 348, 208);
         frame.getContentPane().add(logoImageLabel);
 
+        // 게임 시작 버튼
         JButton startButton = new JButton("게임 시작");
-        startButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose();
+        startButton.addActionListener(e -> {
+            frame.dispose();
 
-                TimePanel timePanel = new TimePanel();
-                TrashBoxPanel trashBox = new TrashBoxPanel();
-                GameController gameController = new GameController();
+            TimePanel timePanel = new TimePanel();
+            TrashBoxPanel trashBox = new TrashBoxPanel();
 
-                gameController.setTimePanel(timePanel);
-                gameController.setTrashBoxPanel(trashBox);
+            // GameController는 이제 (GameClient) 생성자만 사용
+            GameController gameController = new GameController(client);
 
-                new MatchingView(client, timePanel, gameController, trashBox);
-            }
+            // 컨트롤러에 화면 요소 연결
+            gameController.setTimePanel(timePanel);
+            gameController.setTrashBoxPanel(trashBox);
+
+            // GameClient에도 공유 (TIME_UPDATE, TRASH, WINNER 처리용)
+            client.setTimePanel(timePanel);
+            client.setGameController(gameController);
+
+            // 매칭 화면으로 이동
+            new MatchingView(client, timePanel, gameController, trashBox);
         });
         startButton.setBounds(454, 448, 276, 117);
         frame.getContentPane().add(startButton);
-		
-        // 랭킹 화면 이동 버튼
+
+        // 랭킹 버튼
         JButton goRankingViewButton = new JButton("랭킹 보기");
         goRankingViewButton.setBounds(956, 35, 187, 68);
         goRankingViewButton.addActionListener(e -> {
             frame.dispose();
 
-            String username = client.getNickname();   // ex) "yeeun"
-            int lastScore   = client.getLastScore();  // 아직 게임 안 했으면 0일 수도 있음
+            String username = client.getNickname();
+            int finalScore = client.getLastScore();
 
-            new RankingView(client, username, lastScore);
+            new RankingView(client, username, finalScore);
         });
         frame.getContentPane().add(goRankingViewButton);
     }

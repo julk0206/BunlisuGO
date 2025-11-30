@@ -24,10 +24,10 @@ public class GameView {
         addScorePanel();
 
         // 컨트롤러에 프레임/패널 연결 후 게임 시작
-        gameController.setFrame(frame);
+        gameController.setGameFrame(frame);   // ★ 여기 수정
         gameController.setTimePanel(timePanel);
         gameController.setTrashBoxPanel(trashBox);
-        timePanel.setGameController(gameController);
+        gameController.setGameScorePanel(gamescorePanel);
 
         gameController.startGame();
 

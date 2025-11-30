@@ -8,8 +8,6 @@ public class TrashDTO {
     private String imagePath;
     private int x;
     private int y;
-    private boolean isCollected;
-    private Integer collectorId;
     
         public TrashDTO(TrashType type, int x, int y, boolean isCollected) {
         this.name = type.getName();
@@ -17,7 +15,6 @@ public class TrashDTO {
         this.imagePath = type.getImagePath();
         this.x = x;
         this.y = y;
-        this.isCollected = false;
     }
 
     public String getName() {
@@ -59,21 +56,4 @@ public class TrashDTO {
     public void setY(int y) {
         this.y = y;
     }
-
-    public boolean isIsCollected() { //반환하는 거고 
-        return this.isCollected;
-    }
-
-    public void setIsCollected(boolean isCollected) {//얘는 리턴없이 설정만함
-        this.isCollected = isCollected;
-    }
-
-    public Integer getCollectorId() {
-        return this.collectorId;
-    }
-
-    public void setCollectorId(Integer collectorId) {
-        this.collectorId = collectorId;
-    }
-
 }

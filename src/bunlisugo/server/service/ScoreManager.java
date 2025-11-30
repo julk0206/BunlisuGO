@@ -1,32 +1,62 @@
-// bunlisugo.server.service.ScoreManager.java
 package bunlisugo.server.service;
+
+import bunlisugo.server.entity.GameRoom;
 
 public class ScoreManager {
 
-    // 플레이어1 / 플레이어2 점수
-    private int player1Score = 0;
-    private int player2Score = 0;
+    private final GameRoom room;
 
-    // 점수 조회
-    public int getPlayer1Score() {
-        return player1Score;
+    public ScoreManager(GameRoom room) {
+        this.room = room;
     }
 
-    public int getPlayer2Score() {
-        return player2Score;
-    }
-
-    // 특정 플레이어(1번/2번)의 점수 조회가 필요하면:
-    public int getScore(boolean isPlayer1) {
-        return isPlayer1 ? player1Score : player2Score;
-    }
-
-    // 점수 업데이트
-    public void addScore(boolean isPlayer1, int score) {
-        if (isPlayer1) {
-            player1Score += score;
-        } else {
-            player2Score += score;
+    // 현재 점수 조회
+    public int getScore(String playerId) {
+        if (room == null || playerId == null) {
+            return 0;
         }
+
+        String p1 = room.getPlayer1Id();
+        String p2 = room.getPlayer2Id();
+
+        if (playerId.equals(p1)) {
+            return room.getScore1();
+        } else if (playerId.equals(p2)) {
+            return room.getScore2();
+        } else {
+            return 0;
+        }
+    }
+
+    public void setScore(String playerId, int score) {
+        if (room == null || playerId == null) {
+            return;
+        }
+
+        if (score < 0) {
+            score = 0;   // 음수 방지
+        }
+
+        String p1 = room.getPlayer1Id();
+        String p2 = room.getPlayer2Id();
+
+        if (playerId.equals(p1)) {
+            room.setScore1(score);
+        } else if (playerId.equals(p2)) {
+            room.setScore2(score);
+        }
+    }
+
+    public void addScore(String playerId, int delta) {
+        if (room == null || playerId == null) {
+            return;
+        }
+
+        int current = getScore(playerId);
+        int next = current + delta;
+        if (next < 0) {
+            next = 0;
+        }
+        setScore(playerId, next);
     }
 }

@@ -3,6 +3,7 @@ package bunlisugo.server.controller;
 
 import java.util.logging.Logger;
 
+import bunlisugo.server.entity.ScreenSize;
 import bunlisugo.server.entity.User;
 import bunlisugo.server.service.LoginService;
 
@@ -17,18 +18,24 @@ public class LoginCommandHandler implements ClientCommandHandler {
 
     @Override
     public void handle(String[] parts, GameClientHandler session) {
-        if (parts.length < 3) {
+        if (parts.length < 5) {
             session.send("LOGIN_FAIL|BAD_FORMAT");
             return;
         }
 
         String username = parts[1];
         String pw = parts[2];
+        int maxX = Integer.parseInt(parts[3]);  
+        int maxY = Integer.parseInt(parts[4]);
+
+        ScreenSize size = new ScreenSize();
+        size.setMaxX(maxX);
+        size.setMaxY(maxY);
 
         logger.info("[LOGIN TRY] " + username);
 
         try {
-            if (!loginService.login(username, pw)) {
+            if (!loginService.login(username, pw, maxX, maxY)) {
                 session.send("LOGIN_FAIL|BAD_CREDENTIALS");
                 logger.info("[LOGIN FAIL] " + username);
                 return;

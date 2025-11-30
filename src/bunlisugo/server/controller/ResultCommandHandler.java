@@ -1,39 +1,48 @@
-// bunlisugo.server.controller.ResultCommandHandler.java
 package bunlisugo.server.controller;
 
-import java.util.logging.Logger;
-import bunlisugo.server.service.ResultService;
+import java.sql.SQLException;     
+
+import bunlisugo.server.entity.GameRoom;
+import bunlisugo.server.service.GameService;
 
 public class ResultCommandHandler implements ClientCommandHandler {
 
-    private static final Logger logger =
-            Logger.getLogger(ResultCommandHandler.class.getName());
-
-    private final ResultService resultService;
-
-    public ResultCommandHandler(ResultService resultService) {
-        this.resultService = resultService;
+    private final GameService gameService;
+    
+    public ResultCommandHandler(GameService gameService) {
+        this.gameService = gameService;
     }
 
     @Override
     public void handle(String[] parts, GameClientHandler session) {
-        // 기대 패킷: GAME_RESULT|점수
-        if (parts.length < 2) {
-            session.send("ERROR|BAD_GAME_RESULT_FORMAT");
+
+        if (parts.length < 2) return;
+
+        int finalScore = Integer.parseInt(parts[1]);
+
+        GameRoom room = session.getCurrentRoom();
+        if (room == null) {
+            session.send("RESULT_FAIL|NO_ROOM");
             return;
         }
 
-        int score;
-        try {
-            score = Integer.parseInt(parts[1]);
-        } catch (NumberFormatException e) {
-            session.send("ERROR|BAD_GAME_RESULT_SCORE");
-            return;
+        // 누가 보냈는지 세션으로 판단 + 결과 수신 플래그 세팅
+        if (session.getPlayerId().equals(room.getPlayer1Id())) {
+            room.setScore1(finalScore);
+            room.setScore1Received(true);
+        } else {
+            room.setScore2(finalScore);
+            room.setScore2Received(true);
         }
 
-        logger.info("[GAME_RESULT RECV] " + session.getPlayerId() + " score=" + score);
-
-        // 진짜 비즈니스 로직은 서비스에서
-        resultService.submitResult(session, score);
+        // 두 사람 모두 결과 보냈을 때 한 번만 endGame 호출
+        if (room.isScore1Received() && room.isScore2Received()) {
+            String winnerId = gameService.determineWinner(room);
+            try {
+                gameService.endGame(room, winnerId);
+            } catch (SQLException e) {
+                e.printStackTrace();   // 필요하면 로그로 바꿔도 됨
+            }
+        }
     }
 }
