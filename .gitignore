@@ -32,3 +32,5 @@ out/
 # IntelliJ
 .idea/
 *.iml
+
+bin/

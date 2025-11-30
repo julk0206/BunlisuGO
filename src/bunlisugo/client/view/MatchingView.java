@@ -6,6 +6,7 @@ import javax.swing.JLabel;
 
 import bunlisugo.client.GameClient;
 import bunlisugo.client.controller.GameController;
+import bunlisugo.client.model.GameState;
 import bunlisugo.client.view.game.GameScorePanel;
 import bunlisugo.client.view.game.GameView;
 import bunlisugo.client.view.game.TimePanel;
@@ -90,9 +91,16 @@ public class MatchingView {
         waitingPlayerLabel.setText("대기 중인 플레이어: " + waitingCount + "명");
     }
 
-    public void onMatchFound() {
+    public void onMatchFound(String opponentName) {
         frame.dispose();
-        GameScorePanel gamescorePanel;
-        new GameView(timePanel, gameController, trashBox); //근데 이거를 여기에 넣어야 되나..?
+
+        // GameState 초기화
+        String myName = client.getCurrentUser().getUsername();
+        GameState gameState = new GameState(myName, opponentName);
+
+        gameController.setGameState(gameState);
+
+        GameScorePanel gamescorePanel = new GameScorePanel(gameState); //근데 이거를 여기에 넣어야 되나..?
+        new GameView(timePanel, gameController, trashBox, gamescorePanel);
     }
 }

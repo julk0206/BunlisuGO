@@ -4,11 +4,17 @@ import java.io.PrintWriter;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
+import bunlisugo.client.controller.GameController;
 import bunlisugo.client.model.User;
 import bunlisugo.client.view.HomeView;
 import bunlisugo.client.view.LoginView;
 import bunlisugo.client.view.MatchingView;
+import bunlisugo.client.view.RankingView;
+import bunlisugo.client.view.game.GameScorePanel;
+import bunlisugo.client.view.game.TimePanel;
 
 public class GameClient {
 
@@ -17,11 +23,19 @@ public class GameClient {
     private PrintWriter out;
     private BufferedReader in;
     private User currentUser;
+
+    public static final int RANKING_LIMIT = 10;
     
     // 화면 참조
     private LoginView loginView;
     private HomeView homeView;
     private MatchingView matchingView;
+    private RankingView rankingView;
+
+    private GameScorePanel gameScorePanel;
+    private TimePanel timePanel;
+    private List<String> rankList = new ArrayList<>();
+    private GameController gameController = new GameController(null);
     
     public void setLoginView(LoginView loginView) {
         this.loginView = loginView;
@@ -35,8 +49,20 @@ public class GameClient {
         this.matchingView = matchingView;
     }
 
+    public void setRankingView(RankingView rankingView) {
+        this.rankingView = rankingView;
+    }
+
     public User getCurrentUser(){
         return currentUser;
+    }
+
+    public void setGameScorePanel(GameScorePanel panel) {
+        this.gameScorePanel = panel;
+    }
+
+    public void setTimePanel(TimePanel panel) {
+        this.timePanel = panel;
     }
 
     private GameClient() {
@@ -107,10 +133,64 @@ public class GameClient {
                 break;
 
             case "MATCH_FOUND":
-                matchingView.onMatchFound();
+                String opponentName = parts[1]; // 서버에서 전달받은 상대 이름
+                matchingView.onMatchFound(opponentName);
                 break;
 
-        
+            case "SCORE_UPDATE":
+                String playerId = parts[1];
+                int score = Integer.parseInt(parts[2]);
+                gameScorePanel.updateOpponentScore(score); // TODO: 구현 필요
+                break;
+
+            case "TRASH":
+                String name = parts[1];
+                String category = parts[2];
+                int x = Integer.parseInt(parts[1]);
+                int y = Integer.parseInt(parts[2]);
+                // TODO:Trash 업데이트.생성 메서드 게임 화면에 추가
+                break;
+            
+            case "TIME_UPDATE":
+                int time = Integer.parseInt(parts[1]);
+                timePanel.updateTime(time); // TODO: 구현 필요 - 게임룸에다가 쓰세요(타이머)
+                break;
+
+                // 안 써도 될듯 GameStart
+            case "GAME_START":
+                // TODO: 게임 시작 메서드 게임 화면에 추가
+                break;
+            
+            case "GAME_END":
+                // TODO: 게임 업데이트.생성 메서드 게임 화면에 추가 - 최종 점수 날리기
+                break;
+            
+            case "COUNTDOWN":
+                int count = Integer.parseInt(parts[1]);
+                // TODO: 게임룸에다가 쓰세요(타이머) (3~1까지 1초 간격으로 보냄 -> 화면 중앙에 countdown panel 추가해서 표시하다가 1까지 표시 후 없애기)
+                break;
+            
+            case "WINNER":
+                // TODO: 최종 결과 및 승자 표시 (승자 ID 전달하니 본인 ID와 같으면 승리 표시하는 메서드 구현)
+                String winnerId = parts[1];
+
+                gameController.showResult(winnerId); 
+                break;
+            
+            case "RANK":
+                // RANK|ERROR
+                if (parts.length == 2 && parts[1].equals("ERROR")) {
+                    System.out.println("랭킹 조회 실패");
+                    break;
+                }
+
+                // RANK|username|score
+                String username = parts[1];
+                String rankingScore = parts[2];
+
+                rankingView.addRanking(username, rankingScore);
+
+                break;
         }
     }
 

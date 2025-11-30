@@ -15,7 +15,7 @@ public class LoginService {
     //로그인 된 유저를 담는 set
     private final Set<String> loggedInUsers =  Collections.synchronizedSet(new HashSet<>());
 
-    public boolean login(String username, String pw) throws Exception {
+    public boolean login(String username, String pw, int maxX, int maxY) throws Exception {
 
     	// 0. 이미 로그인 된 유저인지
     	if(loggedInUsers.contains(username)) {
@@ -39,9 +39,11 @@ public class LoginService {
         // 3. 로그인 성공
         loggedInUsers.add(username);
         return true; 
+
     }
 
     public void logout(String username) {
         // 나중에 SessionManager 나오면 구현
     }
+
 }

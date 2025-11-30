@@ -1,22 +1,12 @@
 package bunlisugo.server.entity;
 
 public class Ranking {
-    private int userId;
     private String username;
     private int rankingScore;
 
-    public Ranking(int userId, String username, int rankingScore) {
-        this.userId = userId;
+    public Ranking(String username, int rankingScore) {
         this.username = username;
         this.rankingScore = rankingScore;
-    }
-
-    public int getUserId() {
-        return this.userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
     }
 
     public String getUsername() {
@@ -36,3 +26,4 @@ public class Ranking {
     }
 
 }
+

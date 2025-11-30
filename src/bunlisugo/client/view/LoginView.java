@@ -16,6 +16,8 @@ private JTextField NameField;
 private JTextField PasswordField;
 private final GameClient client; // Main에서 넘겨준 GameClient를 보관
 
+int MAX_X = 1200;
+int MAX_Y = 750;
 
 	public LoginView(GameClient client) {
         // 외부 주입 client만 사용
@@ -23,7 +25,7 @@ private final GameClient client; // Main에서 넘겨준 GameClient를 보관
         this.client.setLoginView(this); // 로그인 뷰를 GameClient에 등록
 
         frame = new JFrame("Login View");
-        frame.setBounds(100,100, 1200, 750);
+        frame.setBounds(100,100, MAX_X, MAX_Y);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         initialize();
         frame.setVisible(true);
@@ -77,7 +79,7 @@ private final GameClient client; // Main에서 넘겨준 GameClient를 보관
             }
 
             frame.dispose(); // 현재 로그인 뷰 닫기
-            client.send("LOGIN|" + username + "|" + password); 
+            client.send("LOGIN|" + username + "|" + password +  "|" + MAX_X + "|" + MAX_Y); 
         });
 		
 		

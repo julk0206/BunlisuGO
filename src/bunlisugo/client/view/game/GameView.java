@@ -12,10 +12,11 @@ public class GameView {
     private TrashBoxPanel trashBox;  
     private GameScorePanel gamescorePanel;
 
-    public GameView(TimePanel timePanel, GameController gameController, TrashBoxPanel trashBox) {
+    public GameView(TimePanel timePanel, GameController gameController, TrashBoxPanel trashBox, GameScorePanel gamescorePanel) {
         this.timePanel = timePanel;
         this.gameController = gameController;
         this.trashBox = trashBox;
+        this.gamescorePanel = gamescorePanel;
 
         makeGameView();
         addTimePanel();
@@ -26,6 +27,8 @@ public class GameView {
         gameController.setFrame(frame);
         gameController.setTimePanel(timePanel);
         gameController.setTrashBoxPanel(trashBox);
+        gameController.setGameScorePanel(gamescorePanel);
+
         gameController.startGame();
 
         frame.setVisible(true);
@@ -53,5 +56,4 @@ public class GameView {
 
     }
 }
-
 
