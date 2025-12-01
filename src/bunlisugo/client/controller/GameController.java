@@ -134,41 +134,62 @@ public class GameController {
     public void spawnTrash(String name, String category, String imagePath, int x, int y) {
         if (gameFrame == null || trashBoxPanel == null || gameEnded) return;
 
-        // 쓰레기통 위에 겹치지 않게 Y 최소값 제한 (필요하면 수치 조정)
-        int minY = 250;
-        if (y < minY) {
-            y = minY;
-        }
-
-        TrashType type = TrashType.valueOf(category.toUpperCase()); // 서버에서 보내준 category 활용
-
+        TrashType type = TrashType.valueOf(category.toUpperCase());
         java.net.URL imgUrl = getClass().getResource("/" + imagePath);
         if (imgUrl == null) {
             System.out.println("이미지 못 찾음: " + imagePath);
             return;
         }
 
-        // 원본 아이콘 -> 120x120으로 스케일링
         ImageIcon originalIcon = new ImageIcon(imgUrl);
-        int width  = 120;
+        int width = 120;
         int height = 120;
-        java.awt.Image scaled = originalIcon.getImage()
-                .getScaledInstance(width, height, java.awt.Image.SCALE_SMOOTH);
+
+        java.awt.Image scaled = originalIcon.getImage().getScaledInstance(width, height, java.awt.Image.SCALE_SMOOTH);
         ImageIcon icon = new ImageIcon(scaled);
 
+        Rectangle spawnArea = gameFrame.getContentPane().getBounds();
+        Rectangle trashBounds = new Rectangle(x, y, width, height);
+
+        List<Rectangle> forbiddenAreas = new ArrayList<>();
+        for (JPanel box : trashBoxPanel.getBoxes()) {
+            forbiddenAreas.add(SwingUtilities.convertRectangle(box.getParent(), box.getBounds(), gameFrame.getContentPane()));
+        }
+
+        int maxAttempts = 30;
+        int attempts = 0;
+        while (attempts++ < maxAttempts) {
+            boolean overlap = false;
+
+            // 화면 범위 안에서 랜덤 좌표 생성
+            x = (int) (Math.random() * (spawnArea.width - width));
+            y = (int) (Math.random() * (spawnArea.height - height - 200));  // 위쪽 이름 라벨 영역 피하기 위해 -200
+
+            trashBounds.setLocation(x, y);
+
+            for (Rectangle forbidden : forbiddenAreas) {
+                if (trashBounds.intersects(forbidden)) {
+                    overlap = true;
+                    break;
+                }
+            }
+
+            if (!overlap) break;
+        }
+
+        // 버튼 생성
         JButton trashBtn = new JButton(icon);
         trashBtn.setBorderPainted(false);
         trashBtn.setContentAreaFilled(false);
-
         trashBtn.setBounds(x, y, width, height);
 
-        // 드래그 & 드롭
         addDragAndDrop(trashBtn, type);
 
         trashButtons.add(trashBtn);
         gameFrame.getContentPane().add(trashBtn);
         gameFrame.repaint();
     }
+
 
     // 드래그해서 놓았을 때 점수 판정
     private void addDragAndDrop(JButton btn, TrashType type) {

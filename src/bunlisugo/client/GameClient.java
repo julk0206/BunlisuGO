@@ -7,6 +7,9 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import bunlisugo.client.command.Command;
+import bunlisugo.client.command.CommandRegistry;
+
 import bunlisugo.client.controller.GameController;
 import bunlisugo.client.model.User;
 import bunlisugo.client.model.GameState;
@@ -25,13 +28,10 @@ public class GameClient {
     private BufferedReader in;
 
     private User currentUser;
-
-    // 랭킹에서 쓸 마지막 점수
     private int lastScore = 0;
 
     public static final int RANKING_LIMIT = 10;
 
-    // 화면 참조
     private LoginView loginView;
     private HomeView homeView;
     private MatchingView matchingView;
@@ -39,57 +39,36 @@ public class GameClient {
 
     private GameScorePanel gameScorePanel;
     private TimePanel timePanel;
+
     private List<String> rankList = new ArrayList<>();
 
-    // ★ GameController는 여기서 new 하지 않고, HomeView에서 주입
     private GameController gameController;
-
-    // 게임 중에만 사용하는 상태
     private GameState gameState;
 
-    public void setLoginView(LoginView loginView) {
-        this.loginView = loginView;
-    }
+    public LoginView getLoginView() { return loginView; }
+    public MatchingView getMatchingView() { return matchingView; }
+    public GameScorePanel getGameScorePanel() { return gameScorePanel; }
+    public TimePanel getTimePanel() { return timePanel; }
+    public RankingView getRankingView() { return rankingView; }
+    public void setCurrentUser(User user) { this.currentUser = user; }
 
-    public void setHomeView(HomeView homeView) {
-        this.homeView = homeView;
-    }
+    public void setLoginView(LoginView loginView) { this.loginView = loginView; }
+    public void setHomeView(HomeView homeView) { this.homeView = homeView; }
+    public void setMatchingView(MatchingView matchingView) { this.matchingView = matchingView; }
+    public void setRankingView(RankingView rankingView) { this.rankingView = rankingView; }
 
-    public void setMatchingView(MatchingView matchingView) {
-        this.matchingView = matchingView;
-    }
-
-    public void setRankingView(RankingView rankingView) {
-        this.rankingView = rankingView;
-    }
-
-    public User getCurrentUser() {
-        return currentUser;
-    }
-
-    public int getLastScore() {
-        return lastScore;
-    }
-
-    public void setLastScore(int lastScore) {
-        this.lastScore = lastScore;
-    }
+    public User getCurrentUser() { return currentUser; }
+    public int getLastScore() { return lastScore; }
+    public void setLastScore(int lastScore) { this.lastScore = lastScore; }
 
     public String getNickname() {
         return currentUser != null ? currentUser.getUsername() : null;
     }
 
-    public void setGameScorePanel(GameScorePanel panel) {
-        this.gameScorePanel = panel;
-    }
+    public void setGameScorePanel(GameScorePanel panel) { this.gameScorePanel = panel; }
+    public void setTimePanel(TimePanel panel) { this.timePanel = panel; }
 
-    public void setTimePanel(TimePanel panel) {
-        this.timePanel = panel;
-    }
-
-    public GameController getGameController() {
-        return gameController;
-    }
+    public GameController getGameController() { return gameController; }
 
     public void setGameController(GameController gameController) {
         this.gameController = gameController;
@@ -98,9 +77,7 @@ public class GameClient {
         }
     }
 
-    public GameState getGameState() {
-        return gameState;
-    }
+    public GameState getGameState() { return gameState; }
 
     public void setGameState(GameState gameState) {
         this.gameState = gameState;
@@ -111,7 +88,7 @@ public class GameClient {
 
     private GameClient() {
         try {
-            socket = new Socket("10.240.61.209", 3328);
+            socket = new Socket("10.240.152.133", 3328);
             System.out.println("Connected to server..");
 
             out = new PrintWriter(socket.getOutputStream(), true);
@@ -135,9 +112,7 @@ public class GameClient {
     }
 
     public static GameClient getInstance() {
-        if (instance == null) {
-            instance = new GameClient();
-        }
+        if (instance == null) instance = new GameClient();
         return instance;
     }
 
@@ -152,125 +127,11 @@ public class GameClient {
         String[] parts = line.split("\\|");
         String cmd = parts[0];
 
-        switch (cmd) {
-
-            case "LOGIN_OK":
-                if (loginView != null) {
-                    String username = parts.length > 1 ? parts[1] : "";
-                    currentUser = new User();
-                    currentUser.setUsername(username);
-                    loginView.onLoginSuccess(username);
-                }
-                break;
-
-            case "LOGIN_FAIL":
-                if (loginView != null) {
-                    String reason = (parts.length > 1) ? parts[1] : "알 수 없는 오류";
-                    loginView.onLoginFail(reason);
-                }
-                break;
-
-            case "MATCH_WAITING":
-                int waiting = Integer.parseInt(parts[1]);
-                if (matchingView != null) {
-                    matchingView.onMatchWaiting(waiting);
-                }
-                break;
-
-            case "MATCH_FOUND":
-                String opponentName = parts[1];
-
-                if (currentUser != null) {
-                    GameState state = new GameState(currentUser.getUsername(), opponentName);
-                    setGameState(state);
-                }
-
-                if (matchingView != null) {
-                    matchingView.onMatchFound(opponentName);
-                }
-                break;
-
-            case "SCORE_UPDATE":
-                String playerId = parts[1];
-                int score = Integer.parseInt(parts[2]);
-
-                String myName = (currentUser != null) ? currentUser.getUsername() : null;
-
-                // 점수판 업데이트
-                if (gameScorePanel != null && myName != null) {
-                    if (myName.equals(playerId)) {
-                        // 내 점수
-                        gameScorePanel.updateMyScore(score);
-                    } else {
-                        // 상대 점수
-                        gameScorePanel.updateOpponentScore(score);
-                    }
-                }
-
-                // GameState 업데이트 (결과뷰에서 사용)
-                if (gameState != null && myName != null) {
-                    if (myName.equals(playerId)) {
-                        gameState.setMyScore(score);
-                    } else {
-                        gameState.setOpponentScore(score);
-                    }
-                }
-                break;
-
-            case "TRASH":
-                // 서버 포맷: TRASH|name|category|imagePath|x|y
-                if (parts.length >= 6 && gameController != null) {
-                    String trashName  = parts[1];
-                    String category   = parts[2];
-                    String imagePath  = parts[3];
-                    int x             = Integer.parseInt(parts[4]);
-                    int y             = Integer.parseInt(parts[5]);
-
-                    javax.swing.SwingUtilities.invokeLater(() -> {
-                        gameController.spawnTrash(trashName, category, imagePath, x, y);
-                    });
-                }
-                break;
-
-            case "TIME_UPDATE":
-                int time = Integer.parseInt(parts[1]);
-                if (timePanel != null) {
-                    timePanel.updateTime(time);
-                }
-
-                // 시간 0이 되었을 때 한 번만 onTimeOver 호출
-                if (time == 0 && gameController != null) {
-                    javax.swing.SwingUtilities.invokeLater(() -> {
-                        gameController.onTimeOver();
-                    });
-                }
-                break;
-
-            case "WINNER":
-                String winnerId = parts[1];
-                if (gameController != null) {
-                    gameController.showResult(winnerId);
-                }
-                break;
-
-            case "GAME_END":
-                // 서버에서 게임 종료 알림용으로만 사용.
-                // TIME_UPDATE 0 에서 이미 onTimeOver, showResult 처리하므로 여기서는 아무 것도 안 함.
-                break;
-
-            case "RANKING_RES":
-                List<String> items = new ArrayList<>();
-
-                for (int i = 1; i < parts.length && i <= RANKING_LIMIT; i++) {
-                    items.add(parts[i]);
-                }
-
-                if (rankingView != null) {
-                    javax.swing.SwingUtilities.invokeLater(() -> {
-                        rankingView.updateRanking(items);
-                    });
-                }
-                break;
+        Command command = CommandRegistry.getCommand(cmd);
+        if (command != null) {
+            command.execute(parts, this);
+        } else {
+            System.out.println("Unknown command: " + cmd);
         }
     }
 }

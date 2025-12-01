@@ -56,22 +56,17 @@ public class GameScorePanel {
     }
 
     private void player2Panel() {
-        //player1ScorePanel.setBounds(0, 0, 300, 300);
         player2Panel.setLayout(null);
 
-        //예은님꺼랑 연결해서 이름 받아와야할것같음 아직 잘 모르겟어 
         JLabel player2NameLabel = new JLabel(gameState.getOpponentName() + " 점수: ");
         player2NameLabel.setBounds(10, 10, 150, 30);
         player2Panel.add(player2NameLabel);
-        
-        //점수 받아오는 거
-        //저기서도 세션 받아와야 할 것 같은데 일단 null로 해놨음
+
         player2ScoreLabel = new JLabel(gameState.getOpponentScore() + "점");
-        player2NameLabel.setBounds(10, 50, 150, 30);
-
-        player2Panel.add(player2NameLabel);
-
+        player2ScoreLabel.setBounds(10, 50, 150, 30); 
+        player2Panel.add(player2ScoreLabel);  
     }
+
     
     // 자기 점수 갱신
     public void updateMyScore(int score) {
