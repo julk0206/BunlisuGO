@@ -56,7 +56,6 @@ public class GameScorePanel {
     }
 
     private void player2Panel() {
-        //player1ScorePanel.setBounds(0, 0, 300, 300);
         player2Panel.setLayout(null);
 
         //예은님꺼랑 연결해서 이름 받아와야할것같음 아직 잘 모르겟어 
@@ -73,7 +72,7 @@ public class GameScorePanel {
 
     }
     
-    // 자기 점수 갱신
+    // 자기 점수 갱신 :: 자기가player1 이라는 설정이 되어 잇나?
     public void updateMyScore(int score) {
         player1ScoreLabel.setText(score + "점");
         gameState.setMyScore(score);
