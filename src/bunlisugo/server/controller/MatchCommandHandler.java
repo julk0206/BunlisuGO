@@ -62,7 +62,7 @@ public class MatchCommandHandler implements ClientCommandHandler {
                     notifyMatchedPlayers(room);
 
                     // 카운트다운 + 게임 루프 시작
-                    startCountdown(room);
+                    gameService.startGameLoop(room);
 
                     logger.info("[MATCH FOUND] room created (roomId=" + room.getRoomId() + ")");
                 }
@@ -116,33 +116,5 @@ public class MatchCommandHandler implements ClientCommandHandler {
                 logger.info("[MATCH FOUND SENT] to " + playerId + " opponent: " + p1);
             }
         }
-    }
-
-    private void startCountdown(GameRoom room) {
-        String p1 = room.getPlayer1Id();
-        String p2 = room.getPlayer2Id();
-
-        new Thread(() -> {
-            try {
-                Thread.sleep(1000); // 1초 뒤 시작
-
-                for (int i = 3; i >= 1; i--) {
-                    for (GameClientHandler client : clients) {
-                        if (client.isLoggedIn()
-                                && client.getPlayerId() != null
-                                && (client.getPlayerId().equals(p1) || client.getPlayerId().equals(p2))) {
-                            client.send("COUNTDOWN|" + i);
-                        }
-                    }
-                    Thread.sleep(1000); // 1초 간격
-                }
-
-                // 카운트다운 끝나면 게임 루프 시작
-                gameService.startGameLoop(room);
-
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }).start();
     }
 }

@@ -18,6 +18,7 @@ import bunlisugo.client.GameClient;
 import bunlisugo.client.model.GameState;
 import bunlisugo.client.model.TrashType;
 import bunlisugo.client.view.ResultView;
+import bunlisugo.client.view.game.CountdownPanel;
 import bunlisugo.client.view.game.GameScorePanel;
 import bunlisugo.client.view.game.TimePanel;
 import bunlisugo.client.view.game.TrashBoxPanel;
@@ -49,7 +50,9 @@ public class GameController {
 
     // 외부에서 주입받을 playerId (로그인한 유저 이름)
     private String playerId;
+
     private TimePanel timePanel;
+    private CountdownPanel countdownPanel;
 
     public GameController() {}
 
@@ -101,6 +104,16 @@ public class GameController {
         this.gameState = state;
     }
 
+    public void setCountdownPanel(CountdownPanel countdownPanel) {
+        this.countdownPanel = countdownPanel;
+    }
+
+    public void showCountdown(int sec) {
+        if (countdownPanel != null) {
+            countdownPanel.updateCountdown(sec);
+        }
+    }
+
     public void startGame() {
         gameEnded = false;
         resultShown = false;
@@ -135,7 +148,7 @@ public class GameController {
         if (gameFrame == null || trashBoxPanel == null || gameEnded) return;
 
         TrashType type = TrashType.valueOf(category.toUpperCase());
-        java.net.URL imgUrl = getClass().getResource("/" + imagePath);
+        java.net.URL imgUrl = getClass().getResource(imagePath);
         if (imgUrl == null) {
             System.out.println("이미지 못 찾음: " + imagePath);
             return;
@@ -154,6 +167,20 @@ public class GameController {
         List<Rectangle> forbiddenAreas = new ArrayList<>();
         for (JPanel box : trashBoxPanel.getBoxes()) {
             forbiddenAreas.add(SwingUtilities.convertRectangle(box.getParent(), box.getBounds(), gameFrame.getContentPane()));
+        }
+        
+        if (gameScorePanel != null) {
+            forbiddenAreas.add(SwingUtilities.convertRectangle(
+                gameScorePanel.getplayer1JPanel().getParent(),
+                gameScorePanel.getplayer1JPanel().getBounds(),
+                gameFrame.getContentPane()
+            ));
+
+            forbiddenAreas.add(SwingUtilities.convertRectangle(
+                gameScorePanel.getplayer2JPanel().getParent(),
+                gameScorePanel.getplayer2JPanel().getBounds(),
+                gameFrame.getContentPane()
+            ));
         }
 
         int maxAttempts = 30;

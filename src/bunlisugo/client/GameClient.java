@@ -17,8 +17,11 @@ import bunlisugo.client.view.HomeView;
 import bunlisugo.client.view.LoginView;
 import bunlisugo.client.view.MatchingView;
 import bunlisugo.client.view.RankingView;
+import bunlisugo.client.view.game.CountdownPanel;
 import bunlisugo.client.view.game.GameScorePanel;
+import bunlisugo.client.view.game.GameView;
 import bunlisugo.client.view.game.TimePanel;
+import bunlisugo.client.view.game.TrashBoxPanel;
 
 public class GameClient {
 
@@ -35,29 +38,23 @@ public class GameClient {
     private LoginView loginView;
     private HomeView homeView;
     private MatchingView matchingView;
+    private GameView gameView;
     private RankingView rankingView;
 
     private GameScorePanel gameScorePanel;
     private TimePanel timePanel;
+    private CountdownPanel countdownPanel;
+    private TrashBoxPanel trashBoxPanel;
 
     private List<String> rankList = new ArrayList<>();
 
     private GameController gameController;
     private GameState gameState;
 
-    public LoginView getLoginView() { return loginView; }
-    public MatchingView getMatchingView() { return matchingView; }
-    public GameScorePanel getGameScorePanel() { return gameScorePanel; }
-    public TimePanel getTimePanel() { return timePanel; }
-    public RankingView getRankingView() { return rankingView; }
-    public void setCurrentUser(User user) { this.currentUser = user; }
-
-    public void setLoginView(LoginView loginView) { this.loginView = loginView; }
-    public void setHomeView(HomeView homeView) { this.homeView = homeView; }
-    public void setMatchingView(MatchingView matchingView) { this.matchingView = matchingView; }
-    public void setRankingView(RankingView rankingView) { this.rankingView = rankingView; }
-
+    // User & Authentication
     public User getCurrentUser() { return currentUser; }
+    public void setCurrentUser(User user) { this.currentUser = user; }
+    
     public int getLastScore() { return lastScore; }
     public void setLastScore(int lastScore) { this.lastScore = lastScore; }
 
@@ -65,8 +62,34 @@ public class GameClient {
         return currentUser != null ? currentUser.getUsername() : null;
     }
 
+    // Views 
+    public LoginView getLoginView() { return loginView; }
+    public void setLoginView(LoginView loginView) { this.loginView = loginView; }
+
+    public HomeView getHomeView() { return homeView; }
+    public void setHomeView(HomeView homeView) { this.homeView = homeView; }
+
+    public MatchingView getMatchingView() { return matchingView; }
+    public void setMatchingView(MatchingView matchingView) { this.matchingView = matchingView; }
+
+    public GameView getGameView() { return gameView; }
+    public void setGameView(GameView gameView) { this.gameView = gameView; }
+
+    public RankingView getRankingView() { return rankingView; }
+    public void setRankingView(RankingView rankingView) { this.rankingView = rankingView; }    
+
+    // Game Panels
+    public GameScorePanel getGameScorePanel() { return gameScorePanel; }
     public void setGameScorePanel(GameScorePanel panel) { this.gameScorePanel = panel; }
+
+    public TimePanel getTimePanel() { return timePanel; }
     public void setTimePanel(TimePanel panel) { this.timePanel = panel; }
+
+    public CountdownPanel getCountdownPanel() { return countdownPanel; }
+    public void setCountdownPanel(CountdownPanel panel) { this.countdownPanel = panel; }
+
+    public TrashBoxPanel getTrashBoxPanel() { return trashBoxPanel; }
+    public void setTrashBoxPanel(TrashBoxPanel panel) { this.trashBoxPanel = panel; }
 
     public GameController getGameController() { return gameController; }
 
@@ -88,7 +111,7 @@ public class GameClient {
 
     private GameClient() {
         try {
-            socket = new Socket("10.240.152.133", 3328);
+            socket = new Socket("10.240.217.5", 3328);
             System.out.println("Connected to server..");
 
             out = new PrintWriter(socket.getOutputStream(), true);

@@ -7,6 +7,7 @@ import javax.swing.JLabel;
 import bunlisugo.client.GameClient;
 import bunlisugo.client.controller.GameController;
 import bunlisugo.client.model.GameState;
+import bunlisugo.client.view.game.CountdownPanel;
 import bunlisugo.client.view.game.GameScorePanel;
 import bunlisugo.client.view.game.GameView;
 import bunlisugo.client.view.game.TimePanel;
@@ -18,7 +19,8 @@ public class MatchingView {
     private final GameClient client;
     private final TimePanel timePanel;
     private final GameController gameController;
-    private final TrashBoxPanel trashBox;
+    private final TrashBoxPanel trashBoxPanel;
+    private final CountdownPanel countdownPanel;
 
     private JLabel waitingPlayerLabel;
     private JLabel waitingMessageLabel;
@@ -26,13 +28,15 @@ public class MatchingView {
 
     public MatchingView(GameClient client,
                         TimePanel timePanel,
+                        CountdownPanel countdownPanel,
                         GameController gameController,
-                        TrashBoxPanel trashBox) {
+                        TrashBoxPanel trashBoxPanel) {
 
         this.client = client;
         this.timePanel = timePanel;
         this.gameController = gameController;
-        this.trashBox = trashBox;
+        this.trashBoxPanel = trashBoxPanel;
+        this.countdownPanel = countdownPanel;
 
         // GameClient에 자기 자신 등록 (MATCH_* 이벤트 받을 수 있게)
         this.client.setMatchingView(this);
@@ -99,7 +103,8 @@ public class MatchingView {
         gameController.setGameScorePanel(gamescorePanel);
         client.setGameScorePanel(gamescorePanel);
 
-        // 실제 게임 화면으로 이동
-        new GameView(timePanel, gameController, trashBox, gamescorePanel);
+        //GameView 로 이동
+        GameView gameView = new GameView(timePanel, countdownPanel, gameController, trashBoxPanel, gamescorePanel);
+        client.setGameView(gameView);
     }
 }
