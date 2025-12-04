@@ -18,6 +18,7 @@ import bunlisugo.client.GameClient;
 import bunlisugo.client.model.GameState;
 import bunlisugo.client.model.TrashType;
 import bunlisugo.client.view.ResultView;
+import bunlisugo.client.view.game.CountdownPanel;
 import bunlisugo.client.view.game.GameScorePanel;
 import bunlisugo.client.view.game.TimePanel;
 import bunlisugo.client.view.game.TrashBoxPanel;
@@ -49,7 +50,9 @@ public class GameController {
 
     // 외부에서 주입받을 playerId (로그인한 유저 이름)
     private String playerId;
+
     private TimePanel timePanel;
+    private CountdownPanel countdownPanel;
 
     public GameController() {}
 
@@ -99,6 +102,26 @@ public class GameController {
 
     public void setGameState(GameState state) {
         this.gameState = state;
+    }
+
+    public void setCountdownPanel(CountdownPanel countdownPanel) {
+        this.countdownPanel = countdownPanel;
+    }
+
+    public void showCountdown(int sec) {
+        if (countdownPanel != null) {
+            countdownPanel.updateCountdown(sec);
+        }
+
+        // // 카운트다운 0 되면 게임 시작
+        // if (sec == 0) {
+        //     startGame();
+
+        //     // 서버에게 클라이언트 게임 시작 준비되었음을 알림
+        //     if (client != null) {
+        //         client.send("GAME|START_READY");
+        //     }
+        // }
     }
 
     public void startGame() {

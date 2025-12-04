@@ -30,6 +30,9 @@ public class GameService {
     private static final long GAME_LOOP_INTERVAL_MS   = 1000; // 1초
     private static final long TRASH_SPAWN_INTERVAL_MS = 1500; // 1.5초
 
+    // 모든 클라이언트 게임 시작 준비되었는지 확인
+    private final Vector<String> readyPlayers = new Vector<>();
+
     public GameService(GameRoom room, ScreenSize screenSize, List<GameClientHandler> clients) {
         // room 은 아직 null일 수 있음 → startGameLoop 에서 진짜 방으로 설정
         this.room = room;
@@ -48,8 +51,25 @@ public class GameService {
                 screenSize.getMaxY()
         );
 
+        sendHandler.setRoom(room);
+
+        new Thread(() -> {
+            try {
+                for (int i = 3; i >= 0; i--) {
+                    sendHandler.broadcastCountdown(i);
+                    Thread.sleep(1000);
+                }
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
+
+
+        // 카운트다운 끝 → 모든 클라이언트 준비 -> 바로 타이머 시작
         System.out.println("게임 시작!");
         timerManager.startTimer();
+        sendHandler.broadcastTime();
 
         long lastTrashSpawn = System.currentTimeMillis();
         long lastTimeSent   = System.currentTimeMillis();
@@ -82,6 +102,12 @@ public class GameService {
 
         // 타이머 끝 → 게임 종료 브로드캐스트
         sendHandler.broadcastGameEnd();
+    }
+
+    public void notifyGameReady(String playerId) {
+        if (!readyPlayers.contains(playerId)) {
+            readyPlayers.add(playerId);
+        }
     }
 
     // 현재 필드에 있는 쓰레기 리스트 (필요하면 사용)

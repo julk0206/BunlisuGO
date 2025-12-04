@@ -1,6 +1,7 @@
 package bunlisugo.client.command;
 
 import bunlisugo.client.GameClient;
+import bunlisugo.client.controller.GameController;
 import bunlisugo.client.model.GameState;
 
 public class MatchFoundCommand implements Command {

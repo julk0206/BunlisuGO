@@ -1,0 +1,35 @@
+# 1. Bytecode / Build Artifacts
+##################################
+*.class
+*.jar
+*.war
+*.ear
+/bin/
+/bin
+/build/
+/target/
+
+# 2. IDE / Workspace
+##################################
+# VS Code
+.vscode/
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# IntelliJ
+.idea/
+*.iml
+
+# 3. Logs and Temp Files
+##################################
+*.log
+*.bak
+*~
+
+# 4. OS Generated Files
+##################################
+.DS_Store
+Thumbs.db

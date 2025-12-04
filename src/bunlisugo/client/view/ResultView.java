@@ -10,6 +10,7 @@ import javax.swing.JLabel;
 import bunlisugo.client.GameClient;
 import bunlisugo.client.controller.GameController;
 import bunlisugo.client.model.GameState;
+import bunlisugo.client.view.game.CountdownPanel;
 import bunlisugo.client.view.game.TimePanel;
 import bunlisugo.client.view.game.TrashBoxPanel;
 
@@ -103,17 +104,20 @@ public class ResultView {
                 frame.dispose();
 
                 TimePanel timePanel = new TimePanel();
-                TrashBoxPanel trashBox = new TrashBoxPanel();
+                CountdownPanel countdownPanel = new CountdownPanel();
+                TrashBoxPanel trashBoxPanel = new TrashBoxPanel();
 
                 // GameController는 GameClient만 받는 생성자 사용
                 GameController gameController = new GameController(client);
                 gameController.setTimePanel(timePanel);
-                gameController.setTrashBoxPanel(trashBox);
+                gameController.setCountdownPanel(countdownPanel);
+                gameController.setTrashBoxPanel(trashBoxPanel);
 
                 client.setTimePanel(timePanel);
+                client.setCountdownPanel(countdownPanel);
                 client.setGameController(gameController);
 
-                new MatchingView(client, timePanel, gameController, trashBox);
+                new MatchingView(client, timePanel, countdownPanel, gameController, trashBoxPanel);
             }
         });
         frame.getContentPane().add(goMatchingButton);

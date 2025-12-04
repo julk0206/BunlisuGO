@@ -12,6 +12,7 @@ public class CommandRegistry {
         commands.put("LOGIN_FAIL", new LoginFailCommand());
         commands.put("MATCH_WAITING", new MatchWaitingCommand());
         commands.put("MATCH_FOUND", new MatchFoundCommand());
+        commands.put("COUNTDOWN", new CountdownCommand());
         commands.put("SCORE_UPDATE", new ScoreUpdateCommand());
         commands.put("TRASH", new TrashCommand());
         commands.put("TIME_UPDATE", new TimeUpdateCommand());
