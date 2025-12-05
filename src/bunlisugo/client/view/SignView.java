@@ -102,7 +102,7 @@ private GameClient client;
 		
 
         //비밀번호 일치 여부 
-		JLabel lblNewLabel_1 = new JLabel("New label");
+		JLabel lblNewLabel_1 = new JLabel("비밀번호를 재입력하세요");
 		lblNewLabel_1.setBounds(779, 358, 279, 29);
 		frame.getContentPane().add(lblNewLabel_1);  
 
