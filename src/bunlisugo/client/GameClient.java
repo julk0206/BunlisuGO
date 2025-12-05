@@ -111,7 +111,7 @@ public class GameClient {
 
     private GameClient() {
         try {
-            socket = new Socket("10.240.217.5", 3328);
+            socket = new Socket("10.240.81.202", 3328);
             System.out.println("Connected to server..");
 
             out = new PrintWriter(socket.getOutputStream(), true);
