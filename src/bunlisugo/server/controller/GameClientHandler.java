@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 
 import bunlisugo.server.entity.GameRoom;
 import bunlisugo.server.entity.User;
-import bunlisugo.server.entity.ScreenSize; 
+import bunlisugo.server.entity.ScreenSize;
 import bunlisugo.server.service.GameService;
 import bunlisugo.server.service.LoginService;
 import bunlisugo.server.service.MatchingService;
@@ -22,45 +22,41 @@ public class GameClientHandler extends Thread {
 
     private static final Logger logger = Logger.getLogger(GameClientHandler.class.getName());
 
-    private final LoginService loginService  = new LoginService();
+    private final LoginService loginService;
     private final SignupService signupService = new SignupService();
     private static final MatchingService matchingService = new MatchingService();
 
-    // 기본 화면 크기 설정 (NPE 방지용)
     private static final ScreenSize DEFAULT_SCREEN_SIZE = new ScreenSize();
     static {
-        DEFAULT_SCREEN_SIZE.setMaxX(1200); // 클라이언트 화면 가로 크기
-        DEFAULT_SCREEN_SIZE.setMaxY(750);  // 클라이언트 화면 세로 크기
+        DEFAULT_SCREEN_SIZE.setMaxX(1200);
+        DEFAULT_SCREEN_SIZE.setMaxY(750);
     }
 
-    
     private GameService gameSerivce = new GameService(null, DEFAULT_SCREEN_SIZE, handlers);
 
-    // 서버에 붙어 있는 모든 클라이언트 핸들러 목록
     static final List<GameClientHandler> handlers = new CopyOnWriteArrayList<>();
 
     private final Socket socket;
     private Scanner in;
     private PrintWriter out;
 
-    // 세션 상태
     private boolean loggedIn = false;
     private String playerId;
     private User currentUser;
     private GameRoom currentRoom;
 
-    // 명령별 핸들러 맵
     private final Map<String, ClientCommandHandler> commandHandlers = new HashMap<>();
 
-    public GameClientHandler(Socket socket) {
+    public GameClientHandler(Socket socket, LoginService loginService) {
         this.socket = socket;
-        handlers.add(this); // 새로 만들어진 핸들러(자기 자신)를 리스트에 등록
+        this.loginService = loginService;
+        handlers.add(this);
 
         // 명령 핸들러 등록
-        commandHandlers.put("LOGIN",  new LoginCommandHandler(loginService));
+        commandHandlers.put("LOGIN", new LoginCommandHandler(loginService));
         commandHandlers.put("SIGNUP", new SignCommandHandler(signupService));
-        commandHandlers.put("MATCH",  new MatchCommandHandler(matchingService, handlers, gameSerivce));
-        commandHandlers.put("SCORE",  new ScoreCommandHandler(gameSerivce, handlers));
+        commandHandlers.put("MATCH", new MatchCommandHandler(matchingService, handlers, gameSerivce));
+        commandHandlers.put("SCORE", new ScoreCommandHandler(gameSerivce, handlers));
         commandHandlers.put("RANKING_REQ", new RankCommandHandler(gameSerivce));
         commandHandlers.put("RESULT", new ResultCommandHandler(gameSerivce));
     }
@@ -68,14 +64,13 @@ public class GameClientHandler extends Thread {
     @Override
     public void run() {
         try {
-            in  = new Scanner(socket.getInputStream());
+            in = new Scanner(socket.getInputStream());
             out = new PrintWriter(socket.getOutputStream(), true);
 
             while (in.hasNextLine()) {
                 String line = in.nextLine().trim();
-                if (line.isEmpty()) {
-                    continue;
-                }
+                if (line.isEmpty()) continue;
+
                 handleMessage(line);
             }
         } catch (IOException e) {
@@ -84,10 +79,13 @@ public class GameClientHandler extends Thread {
             handlers.remove(this);
 
             if (playerId != null) {
-                loginService.logout(playerId);
+                loginService.logout(playerId); // 로그아웃 처리
                 logger.info("[LOGOUT] " + playerId);
             }
-            try { socket.close(); } catch (IOException ignored) {}
+
+            try {
+                socket.close();
+            } catch (IOException ignored) {}
         }
     }
 
@@ -100,7 +98,6 @@ public class GameClientHandler extends Thread {
 
         String cmd = parts[0];
 
-        // 로그인 전에 허용되는 명령 제한
         if (!"LOGIN".equals(cmd) && !"SIGNUP".equals(cmd) && !loggedIn) {
             send("ERROR|NOT_LOGGED_IN");
             return;
@@ -114,8 +111,6 @@ public class GameClientHandler extends Thread {
 
         handler.handle(parts, this);
     }
-
-    // 세션 상태 & 전송
 
     public void send(String msg) {
         out.println(msg);

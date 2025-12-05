@@ -43,7 +43,7 @@ public class LoginService {
     }
 
     public void logout(String username) {
-        // 나중에 SessionManager 나오면 구현
+    	loggedInUsers.remove(username);
     }
 
 }

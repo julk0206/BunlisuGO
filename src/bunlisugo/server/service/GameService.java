@@ -43,14 +43,9 @@ public class GameService {
 
  
     public void startGameLoop(GameRoom room) {
-
         this.room = room;
         this.scoreManager = new ScoreManager(room);
-        this.trashManager = new TrashManager(
-                screenSize.getMaxX(),
-                screenSize.getMaxY()
-        );
-
+        this.trashManager = new TrashManager(screenSize.getMaxX(), screenSize.getMaxY());
         sendHandler.setRoom(room);
 
         new Thread(() -> {
@@ -60,48 +55,38 @@ public class GameService {
                     Thread.sleep(1000);
                 }
 
+                // 카운트다운이 끝난 뒤에 타이머 시작 + 초기 TIME_UPDATE 전송
+                System.out.println("게임 시작!");
+                timerManager.startTimer();
+                sendHandler.broadcastTime();
+
+                long lastTrashSpawn = System.currentTimeMillis();
+                long lastTimeSent = System.currentTimeMillis();
+
+                while (!timerManager.isFinished()) {
+                    long now = System.currentTimeMillis();
+
+                    if (now - lastTimeSent >= 1000) {
+                        sendHandler.broadcastTime();
+                        lastTimeSent = now;
+                    }
+
+                    if (now - lastTrashSpawn >= TRASH_SPAWN_INTERVAL_MS) {
+                        TrashDTO trash = trashManager.generateTrash(
+                                screenSize.getMaxX(), screenSize.getMaxY());
+                        sendHandler.broadcastTrash(trash);
+                        lastTrashSpawn = now;
+                    }
+
+                    Thread.sleep(GAME_LOOP_INTERVAL_MS);
+                }
+
+                sendHandler.broadcastGameEnd();
+
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }).start();
-
-
-        // 카운트다운 끝 → 모든 클라이언트 준비 -> 바로 타이머 시작
-        System.out.println("게임 시작!");
-        timerManager.startTimer();
-        sendHandler.broadcastTime();
-
-        long lastTrashSpawn = System.currentTimeMillis();
-        long lastTimeSent   = System.currentTimeMillis();
-
-        while (!timerManager.isFinished()) {
-            long now = System.currentTimeMillis();
-
-            // 1초마다 남은 시간 전송
-            if (now - lastTimeSent >= 1000) {
-                sendHandler.broadcastTime();
-                lastTimeSent = now;
-            }
-
-            // 1.5초마다 쓰레기 생성
-            if (now - lastTrashSpawn >= TRASH_SPAWN_INTERVAL_MS) {
-                TrashDTO trash = trashManager.generateTrash(
-                        screenSize.getMaxX(),
-                        screenSize.getMaxY()
-                );
-                sendHandler.broadcastTrash(trash);
-                lastTrashSpawn = now;
-            }
-
-            try {
-                Thread.sleep(GAME_LOOP_INTERVAL_MS);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
-        // 타이머 끝 → 게임 종료 브로드캐스트
-        sendHandler.broadcastGameEnd();
     }
 
     public void notifyGameReady(String playerId) {

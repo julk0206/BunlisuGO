@@ -1,7 +1,10 @@
 package bunlisugo.client.view.game;
 
+import java.awt.Color;
+
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.LineBorder;
 
 import bunlisugo.client.GameClient;
 import bunlisugo.client.model.GameState;
@@ -35,38 +38,48 @@ public class GameScorePanel {
         player2Panel();
     }
 
+    // 내 점수 라벨
     private void player1Panel() {
-
-        player1Panel.setLayout(null); //이건 언제? 몇 번째줄에?
+        player1Panel.setLayout(null);
 
         User user = GameClient.getInstance().getCurrentUser();
         String player1name = user.getUsername();
-        JLabel player1NameLabel = new JLabel(gameState.getMyName()+ "\n 점수: " );
-        
+
+        // 패널 자체 크기 키우기
+        player1Panel.setBounds(71, 34, 166, 70); 
+
+        // 이름 라벨
+        JLabel player1NameLabel = new JLabel(player1name + " 점수:");
+        player1NameLabel.setBounds(10, 10, 150, 20); // ✅ 위치 지정
+        player1NameLabel.setBorder(new LineBorder(Color.GRAY, 1));
         player1Panel.add(player1NameLabel);
-        
-        //점수 받아오는 거
-        //저기서도 세션 받아와야 할 것 같은데 일단 null로 해놨음
+
+        // 점수 라벨
         player1ScoreLabel = new JLabel(gameState.getMyScore() + "점");
-        player1ScoreLabel.setBounds(10, 50, 150, 30);
-
+        player1ScoreLabel.setBounds(10, 35, 150, 25); // 아래로 약간 내림
+        player1ScoreLabel.setBorder(new LineBorder(Color.BLUE, 1));
         player1Panel.add(player1ScoreLabel);
-
-
     }
 
+
+    // 상대 점수 라벨
     private void player2Panel() {
         player2Panel.setLayout(null);
 
+        player2Panel.setBounds(938, 34, 166, 70); 
+
+        // 이름 라벨
         JLabel player2NameLabel = new JLabel(gameState.getOpponentName() + " 점수: ");
-        player2NameLabel.setBounds(10, 10, 150, 30);
+        player2NameLabel.setBounds(10, 10, 150, 20);  // ✅ 위치 지정
+        player2NameLabel.setBorder(new LineBorder(Color.GRAY, 1));
         player2Panel.add(player2NameLabel);
 
+        // 점수 라벨
         player2ScoreLabel = new JLabel(gameState.getOpponentScore() + "점");
-        player2ScoreLabel.setBounds(10, 50, 150, 30); 
-        player2Panel.add(player2ScoreLabel);  
+        player2ScoreLabel.setBounds(10, 35, 150, 25); 
+        player2ScoreLabel.setBorder(new LineBorder(Color.RED, 1));
+        player2Panel.add(player2ScoreLabel);
     }
-
     
     // 자기 점수 갱신
     public void updateMyScore(int score) {

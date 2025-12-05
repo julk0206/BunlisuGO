@@ -112,16 +112,6 @@ public class GameController {
         if (countdownPanel != null) {
             countdownPanel.updateCountdown(sec);
         }
-
-        // // 카운트다운 0 되면 게임 시작
-        // if (sec == 0) {
-        //     startGame();
-
-        //     // 서버에게 클라이언트 게임 시작 준비되었음을 알림
-        //     if (client != null) {
-        //         client.send("GAME|START_READY");
-        //     }
-        // }
     }
 
     public void startGame() {
@@ -158,7 +148,7 @@ public class GameController {
         if (gameFrame == null || trashBoxPanel == null || gameEnded) return;
 
         TrashType type = TrashType.valueOf(category.toUpperCase());
-        java.net.URL imgUrl = getClass().getResource("/" + imagePath);
+        java.net.URL imgUrl = getClass().getResource(imagePath);
         if (imgUrl == null) {
             System.out.println("이미지 못 찾음: " + imagePath);
             return;
@@ -177,6 +167,20 @@ public class GameController {
         List<Rectangle> forbiddenAreas = new ArrayList<>();
         for (JPanel box : trashBoxPanel.getBoxes()) {
             forbiddenAreas.add(SwingUtilities.convertRectangle(box.getParent(), box.getBounds(), gameFrame.getContentPane()));
+        }
+        
+        if (gameScorePanel != null) {
+            forbiddenAreas.add(SwingUtilities.convertRectangle(
+                gameScorePanel.getplayer1JPanel().getParent(),
+                gameScorePanel.getplayer1JPanel().getBounds(),
+                gameFrame.getContentPane()
+            ));
+
+            forbiddenAreas.add(SwingUtilities.convertRectangle(
+                gameScorePanel.getplayer2JPanel().getParent(),
+                gameScorePanel.getplayer2JPanel().getBounds(),
+                gameFrame.getContentPane()
+            ));
         }
 
         int maxAttempts = 30;
