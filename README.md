@@ -11,13 +11,13 @@ BunlisuGO는 실시간으로 화면에 나타나는 쓰레기를 올바른 분�
 
 | 구분 | 기술 / 환경 | 상세 |
 |---|---:|---|
-| Language | Java 21 | 프로젝트 메인 언어 |
+| Language | Java 17 | 프로젝트 메인 언어 |
 | GUI | Java Swing (JFrame, JPanel, JButton) | UI 및 드래그앤드롭 구현 |
 | Network | Java Socket (TCP/IP), Multi-threading | 실시간 매칭, 동기화 |
 | Persistence | JDBC / DAO Pattern | 인증, 랭킹, 게임 결과 저장 |
 | IDE | IntelliJ IDEA / Eclipse | 개발 환경 |
 
---
+---
 
 ## 실행 화면
 
