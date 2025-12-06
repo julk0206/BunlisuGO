@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-17"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-17">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="C:/Users/82103/Downloads/jbcrypt-0.4.jar"/>
+	<classpathentry kind="lib" path="C:/Users/82103/Downloads/mariadb-java-client-3.5.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
-	<classpathentry kind="lib" path="libs/mariadb-java-client-3.5.3.jar"/>
-    <classpathentry kind="lib" path="libs/jbcrypt-0.4.jar"/>
 </classpath>
