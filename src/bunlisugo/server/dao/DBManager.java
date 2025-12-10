@@ -15,10 +15,7 @@ public class DBManager {
         try {
             Properties props = new Properties();
 
-            // 1) classpath 내에서 먼저 시도
             InputStream in = DBManager.class.getClassLoader().getResourceAsStream("db.properties");
-
-            // 2) 못 찾으면 프로젝트 루트에서 직접 읽기
             if (in == null) {
                 in = new FileInputStream("db.properties");
             }
@@ -30,7 +27,15 @@ public class DBManager {
             username = props.getProperty("db.username");
             password = props.getProperty("db.password");
 
-            System.out.println("[DBManager] DB 설정 로드 완료");
+            System.out.println("[DBManager] DB 설정 로드 완료: " + url);
+
+            try {
+                Class.forName("org.mariadb.jdbc.Driver");
+                System.out.println("[DBManager] MariaDB JDBC 드라이버 로드 성공");
+            } catch (ClassNotFoundException e) {
+                System.err.println("[DBManager] MariaDB 드라이버 클래스를 찾을 수 없습니다.");
+                e.printStackTrace();
+            }
 
         } catch (Exception e) {
             System.err.println("[DBManager] DB 설정 파일 로드 실패");
