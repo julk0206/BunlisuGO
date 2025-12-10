@@ -1,11 +1,10 @@
-package bunlisugo.server.socket;
+package bunlisugo.server;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import bunlisugo.server.controller.GameClientHandler;

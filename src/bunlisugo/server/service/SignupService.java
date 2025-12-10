@@ -11,12 +11,12 @@ public class SignupService {
 	private final UserDAO userDAO = new UserDAO();
 
 	public boolean signup(String username, String pw) {
+		System.out.println("Signup called with username = " + username);
 		validateInput(username, pw);
-		hashPassword(pw);
-		
+		checkDuplicate(username);
 		String hashedPw = hashPassword(pw); //해시는 필드로 두면 안 됨
 		User user = buildUser(username, hashedPw);
-		
+		System.out.println("User 객체 생성 완료");
 		return saveUser(user);
 		
 
@@ -37,7 +37,10 @@ public class SignupService {
 	}
 	
 	private void checkDuplicate(String username) {
-		// 2. 아이디 중복 체크(이미 db에 있는지)
+		 User existing = userDAO.getUserByUsername(username);
+		 if (existing != null) {
+		     throw new IllegalArgumentException("Username already exists");
+		 }
     }
 	
 
@@ -52,12 +55,8 @@ public class SignupService {
     }
 	
 	private boolean saveUser(User user) {
-	    try {
-	        return userDAO.createUser(user);
-	    } catch (SQLException e) {
-	        e.printStackTrace(); 
-	        return false;
-	    }
+		System.out.println("Saving user: " + user.getUsername());
+	    return userDAO.createUser(user);
 	}
 
 }

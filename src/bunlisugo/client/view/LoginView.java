@@ -28,6 +28,7 @@ public class LoginView {
     }
 
     private void initialize() {
+
         frame.getContentPane().setLayout(null);
 
         JLabel title = new JLabel("분리수GO");
@@ -73,19 +74,36 @@ public class LoginView {
             }
 
             try {
-                client.connect(ip); // 여기서 연결
-                frame.dispose();
+                client.connect(ip);
                 client.send("LOGIN|" + username + "|" + password + "|" + MAX_X + "|" + MAX_Y);
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(frame, "서버 연결 실패: " + ex.getMessage());
+                return;
             }
+
+            frame.dispose();
         });
 
         JButton SignButton = new JButton("계정이 없으신가요? 회원가입 하러가기");
         SignButton.setBounds(430, 549, 323, 45);
         SignButton.addActionListener(e -> {
+
+            String ip = ipField.getText().trim();
+
+            if (ip.isEmpty()) {
+                JOptionPane.showMessageDialog(frame, "서버 IP를 입력해주세요.");
+                return;
+            }
+
+            try {
+                client.connect(ip);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(frame, "서버 연결 실패: " + ex.getMessage());
+                return;
+            }
+
             frame.dispose();
-            new SignView(GameClient.getInstance());
+            new SignView(client);
         });
         frame.getContentPane().add(SignButton);
     }

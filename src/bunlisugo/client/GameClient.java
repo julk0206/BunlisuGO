@@ -22,6 +22,7 @@ public class GameClient {
     private int lastScore = 0;
     public static final int RANKING_LIMIT = 10;
 
+    private SignView signView;
     private LoginView loginView;
     private HomeView homeView;
     private MatchingView matchingView;
@@ -100,6 +101,14 @@ public class GameClient {
 
     public String getNickname() {
         return currentUser != null ? currentUser.getUsername() : null;
+    }
+
+    public SignView getSignView() {
+        return signView;
+    }
+
+    public void setSignView(SignView signView) {
+        this.signView = signView;
     }
 
     public LoginView getLoginView() { return loginView; }

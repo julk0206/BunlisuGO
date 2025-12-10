@@ -22,6 +22,8 @@ public class GameClientHandler extends Thread {
 
     private static final Logger logger = Logger.getLogger(GameClientHandler.class.getName());
 
+    static final List<GameClientHandler> handlers = new CopyOnWriteArrayList<>();
+
     private final LoginService loginService;
     private final SignupService signupService = new SignupService();
     private static final MatchingService matchingService = new MatchingService();
@@ -32,9 +34,7 @@ public class GameClientHandler extends Thread {
         DEFAULT_SCREEN_SIZE.setMaxY(750);
     }
 
-    private GameService gameSerivce = new GameService(null, DEFAULT_SCREEN_SIZE, handlers);
-
-    static final List<GameClientHandler> handlers = new CopyOnWriteArrayList<>();
+    private GameService gameService;
 
     private final Socket socket;
     private Scanner in;
@@ -50,15 +50,18 @@ public class GameClientHandler extends Thread {
     public GameClientHandler(Socket socket, LoginService loginService) {
         this.socket = socket;
         this.loginService = loginService;
+
         handlers.add(this);
+
+        this.gameService = new GameService(null, DEFAULT_SCREEN_SIZE, handlers);
 
         // 명령 핸들러 등록
         commandHandlers.put("LOGIN", new LoginCommandHandler(loginService));
         commandHandlers.put("SIGNUP", new SignCommandHandler(signupService));
-        commandHandlers.put("MATCH", new MatchCommandHandler(matchingService, handlers, gameSerivce));
-        commandHandlers.put("SCORE", new ScoreCommandHandler(gameSerivce, handlers));
-        commandHandlers.put("RANKING_REQ", new RankCommandHandler(gameSerivce));
-        commandHandlers.put("RESULT", new ResultCommandHandler(gameSerivce));
+        commandHandlers.put("MATCH", new MatchCommandHandler(matchingService, handlers, gameService));
+        commandHandlers.put("SCORE", new ScoreCommandHandler(gameService, handlers));
+        commandHandlers.put("RANKING_REQ", new RankCommandHandler(gameService));
+        commandHandlers.put("RESULT", new ResultCommandHandler(gameService));
     }
 
     @Override
@@ -79,7 +82,7 @@ public class GameClientHandler extends Thread {
             handlers.remove(this);
 
             if (playerId != null) {
-                loginService.logout(playerId); // 로그아웃 처리
+                loginService.logout(playerId);
                 logger.info("[LOGOUT] " + playerId);
             }
 
@@ -97,7 +100,9 @@ public class GameClientHandler extends Thread {
         }
 
         String cmd = parts[0];
+        System.out.println("Received command: " + cmd + " | Full line: " + line);
 
+        // LOGIN, SIGNUP만 로그인 이전에 허용
         if (!"LOGIN".equals(cmd) && !"SIGNUP".equals(cmd) && !loggedIn) {
             send("ERROR|NOT_LOGGED_IN");
             return;
@@ -117,35 +122,15 @@ public class GameClientHandler extends Thread {
         out.flush();
     }
 
-    public boolean isLoggedIn() {
-        return loggedIn;
-    }
+    public boolean isLoggedIn() { return loggedIn; }
+    public void setLoggedIn(boolean loggedIn) { this.loggedIn = loggedIn; }
 
-    public void setLoggedIn(boolean loggedIn) {
-        this.loggedIn = loggedIn;
-    }
+    public String getPlayerId() { return playerId; }
+    public void setPlayerId(String playerId) { this.playerId = playerId; }
 
-    public String getPlayerId() {
-        return playerId;
-    }
+    public User getCurrentUser() { return currentUser; }
+    public void setCurrentUser(User currentUser) { this.currentUser = currentUser; }
 
-    public void setPlayerId(String playerId) {
-        this.playerId = playerId;
-    }
-
-    public User getCurrentUser() {
-        return currentUser;
-    }
-
-    public void setCurrentUser(User currentUser) {
-        this.currentUser = currentUser;
-    }
-
-    public GameRoom getCurrentRoom() {
-        return currentRoom;
-    }
-
-    public void setCurrentRoom(GameRoom room) {
-        this.currentRoom = room;
-    }
+    public GameRoom getCurrentRoom() { return currentRoom; }
+    public void setCurrentRoom(GameRoom room) { this.currentRoom = room; }
 }

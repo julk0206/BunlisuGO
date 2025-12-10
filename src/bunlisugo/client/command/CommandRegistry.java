@@ -8,7 +8,9 @@ public class CommandRegistry {
     private static final Map<String, Command> commands = new HashMap<>();
 
     static {
-        commands.put("LOGIN_OK", new LoginOkCommand());
+    	commands.put("SIGNUP_OK", new SignupOkCommand());
+    	commands.put("SIGNUP_FAIL", new SignupFailCommand());
+    	commands.put("LOGIN_OK", new LoginOkCommand());
         commands.put("LOGIN_FAIL", new LoginFailCommand());
         commands.put("MATCH_WAITING", new MatchWaitingCommand());
         commands.put("MATCH_FOUND", new MatchFoundCommand());

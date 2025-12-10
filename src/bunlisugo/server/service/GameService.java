@@ -4,7 +4,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 import bunlisugo.server.controller.GameClientHandler;
-import bunlisugo.server.controller.SendCommandHandler;
+import bunlisugo.server.controller.broadcast.SendBroadcastHandler;
 import bunlisugo.server.dao.GameDAO;
 import bunlisugo.server.dto.TrashDTO;
 import bunlisugo.server.entity.GameRoom;
@@ -25,7 +25,7 @@ public class GameService {
 
     private final ScreenSize screenSize;
     private final List<GameClientHandler> clients;
-    private final SendCommandHandler sendHandler;
+    private final SendBroadcastHandler sendHandler;
 
     private static final long GAME_LOOP_INTERVAL_MS   = 1000; // 1초
     private static final long TRASH_SPAWN_INTERVAL_MS = 1500; // 1.5초
@@ -38,7 +38,7 @@ public class GameService {
         this.room = room;
         this.screenSize = screenSize;
         this.clients = clients;
-        this.sendHandler = new SendCommandHandler(this, clients, timerManager);
+        this.sendHandler = new SendBroadcastHandler(this, clients, timerManager);
     }
 
  
